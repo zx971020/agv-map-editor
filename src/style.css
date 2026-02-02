@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* shadcn-vue 默认变量 - 调整为工业风格 */
+    --background: 224 10% 88%;        /* #e0e0e0 */
+    --foreground: 0 0% 20%;           /* #333333 */
+    
+    --card: 0 0% 93%;                 /* #eeeeee */
+    --card-foreground: 0 0% 20%;
+    
+    --popover: 0 0% 93%;
+    --popover-foreground: 0 0% 20%;
+    
+    --primary: 210 100% 40%;          /* #0066cc */
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 0 0% 88%;
+    --secondary-foreground: 0 0% 20%;
+    
+    --muted: 0 0% 88%;
+    --muted-foreground: 0 0% 40%;     /* #666666 */
+    
+    --accent: 210 100% 40%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 10 80% 40%;        /* #cc3300 */
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 0 0% 74%;               /* #bcbcbc */
+    --input: 0 0% 74%;
+    --ring: 210 100% 40%;
+    
+    --radius: 0.125rem;               /* 2px - 工业风格极小圆角 */
+    
+    /* 自定义字体 */
+    --font-sans: 'Consolas', 'Monaco', 'Segoe UI', sans-serif;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
