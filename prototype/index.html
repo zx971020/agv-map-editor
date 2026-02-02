@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -32,7 +32,7 @@
                 </div>
                 <button class="icon-button small collapse-btn">-</button>
               </div>
-              
+
               <!-- 子地图列表 -->
               <div class="sub-maps">
                 <div class="map-tree-line"></div>
@@ -57,7 +57,7 @@
 
             <!-- 另一个主地图（无子图） -->
             <div class="map-group">
-               <div class="map-item">
+              <div class="map-item">
                 <div class="map-icon main">M</div>
                 <div class="map-info">
                   <div class="map-name">办公区测试</div>
@@ -129,13 +129,23 @@
         <section class="canvas-panel">
           <div class="canvas-toolbar">
             <div class="tool-group">
-              <button class="tool-button active">选择</button>
-              <button class="tool-button">路径</button>
-              <button class="tool-button">区域</button>
+              <button class="tool-button active" title="选择工具 (V)">选择</button>
+              <button class="tool-button" title="路径工具 (P)">路径</button>
+              <button class="tool-button" title="区域工具 (R)">区域</button>
             </div>
             <div class="tool-group">
-              <button class="tool-button">吸附</button>
-              <button class="tool-button">参考线</button>
+              <button class="tool-button" id="snapToggle" title="网格吸附 (按住 Shift)">
+                吸附
+              </button>
+              <button class="tool-button" title="显示参考线 (G)">参考线</button>
+            </div>
+            <div
+              class="tool-group"
+              style="margin-left: auto; font-size: 11px; color: var(--text-dim)"
+            >
+              <span title="快捷键提示"
+                >Del: 删除 | Ctrl+D: 复制 | Shift: 网格吸附 | 方向键: 移动</span
+              >
             </div>
           </div>
           <div class="canvas-area" id="canvasArea">

@@ -1,19 +1,22 @@
 :root {
-  /* 工业风色板 */
+  /* 工业风色板 - 优化对比度 */
   --bg: #e0e0e0;
-  --panel: #eeeeee;
-  --panel-header: #e0e0e0;
-  --border: #bcbcbc;
-  --border-focus: #4a90e2;
-  --text: #333333;
-  --text-dim: #666666;
+  --panel: #f5f5f5;
+  --panel-header: #e8e8e8;
+  --border: #d0d0d0;
+  --border-focus: #0066cc;
+  --text: #1a1a1a;
+  --text-dim: #525252;
   --primary: #0066cc;
   --primary-hover: #0052a3;
   --primary-text: #ffffff;
   --danger: #cc3300;
-  --selection: rgba(0, 102, 204, 0.1);
-  --radius: 2px; /* 极小圆角 */
-  --font-family: "Consolas", "Monaco", "Segoe UI", sans-serif; /* 增加等宽字体优先 */
+  --danger-hover: #a32800;
+  --selection: rgba(0, 102, 204, 0.12);
+  --radius: 2px;
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
 }
 
 * {
@@ -53,8 +56,36 @@ body::after {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   border-right: 1px solid var(--border);
+}
+
+/* 自定义滚动条 */
+.sidebar::-webkit-scrollbar,
+.properties::-webkit-scrollbar,
+.canvas-viewport::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track,
+.properties::-webkit-scrollbar-track,
+.canvas-viewport::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+
+.sidebar::-webkit-scrollbar-thumb,
+.properties::-webkit-scrollbar-thumb,
+.canvas-viewport::-webkit-scrollbar-thumb {
+  background: #b0b0b0;
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover,
+.properties::-webkit-scrollbar-thumb:hover,
+.canvas-viewport::-webkit-scrollbar-thumb:hover {
+  background: #909090;
 }
 
 .properties {
@@ -180,7 +211,9 @@ body::after {
 }
 
 /* 适配原HTML结构，因为原结构没有panel-content，直接对直接子元素调整 */
-.map-items, .element-grid, .property-grid {
+.map-items,
+.element-grid,
+.property-grid {
   padding: 10px;
 }
 
@@ -211,11 +244,20 @@ body::after {
   text-align: center;
   cursor: grab;
   background: #fff;
+  transition: all var(--transition-fast);
+  user-select: none;
 }
 
 .element-card:hover {
   background: #f0f8ff;
   border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 102, 204, 0.15);
+}
+
+.element-card:active {
+  cursor: grabbing;
+  transform: translateY(0);
 }
 
 .element-icon {
@@ -272,16 +314,22 @@ body::after {
   font-size: 13px;
   cursor: pointer;
   color: var(--text);
+  transition: all var(--transition-fast);
+  user-select: none;
 }
 
 .tool-button:hover {
-  background: #ddd;
-  border-color: #ccc;
+  background: #e0e0e0;
+  border-color: #d0d0d0;
+}
+
+.tool-button:active {
+  transform: scale(0.98);
 }
 
 .tool-button.active {
   color: var(--primary-text);
-  background: var(--text-dim); /* 深灰背景表示选中，类似CAD */
+  background: var(--text-dim);
   border-color: var(--text);
 }
 
@@ -313,7 +361,7 @@ body::after {
   border-bottom: 1px solid #999;
   /* 简化尺子刻度 */
   background-image: linear-gradient(to right, #ccc 1px, transparent 1px);
-  background-size: 50px 100%; 
+  background-size: 50px 100%;
 }
 
 .ruler-left {
@@ -330,7 +378,7 @@ body::after {
   position: relative;
   overflow: auto;
   background: #eaeaeb; /* 经典 CAD 画布灰 */
-  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1); /* 内陷感 */
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1); /* 内陷感 */
 }
 
 .canvas-stage {
@@ -339,13 +387,13 @@ body::after {
   height: 1200px;
   transform-origin: top left;
   background: #fff; /* 纸张白 */
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .grid {
   position: absolute;
   inset: 0;
-  background-image: 
+  background-image:
     linear-gradient(#e5e5e5 1px, transparent 1px),
     linear-gradient(90deg, #e5e5e5 1px, transparent 1px);
   background-size: 20px 20px; /* 标准方格 */
@@ -384,7 +432,7 @@ body::after {
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 10px 20px;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid var(--border);
   color: var(--text-dim);
   font-size: 13px;
@@ -451,7 +499,7 @@ body::after {
   width: 92px;
   height: 72px;
   border-radius: 2px;
-  border: 1px solid #333; /* 强硬边框 */
+  border: 2px solid #333;
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -459,11 +507,28 @@ body::after {
   justify-content: center;
   gap: 4px;
   cursor: move;
-  box-shadow: 2px 2px 0 rgba(0,0,0,0.1); /* 硬投影 */
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+  transition: all var(--transition-fast);
+  user-select: none;
 }
 
 .node:hover {
-  box-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+  border-color: #000;
+  z-index: 10;
+}
+
+.node.selected {
+  border: 2px solid var(--primary);
+  outline: 2px dashed var(--primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+  background: #f0f8ff;
+  z-index: 20;
+}
+
+.node:hover {
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.15);
 }
 
 .node.selected {
@@ -494,26 +559,26 @@ body::after {
 }
 
 /* 覆盖特定类型的图标色，保持单色风格或低饱和 */
-.node[data-type="charging"] .node-icon {
+.node[data-type='charging'] .node-icon {
   background: #fff;
   color: #000;
   border-color: #20b26b;
 }
 
-.node[data-type="parking"] .node-icon {
+.node[data-type='parking'] .node-icon {
   background: #fff;
   color: #000;
   border-color: #5d4bff;
 }
 
-.node[data-type="path"] {
+.node[data-type='path'] {
   width: 120px;
   height: 20px;
   background: #f0f0f0;
   border: 1px solid #999;
 }
 
-.node[data-type="path"] .node-icon {
+.node[data-type='path'] .node-icon {
   display: none;
 }
 
@@ -529,28 +594,52 @@ body::after {
   font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
-  color: #333;
+  color: var(--text);
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.ghost-button:hover,
+.icon-button:hover {
+  background: #e8e8e8;
+  border-color: #b0b0b0;
+}
+
+.ghost-button:active,
+.icon-button:active {
+  transform: scale(0.98);
 }
 
 .primary-button {
   background: var(--primary);
-  border-color: var(--primary-hover);
-  color: #fff;
+  border-color: var(--primary);
+  color: var(--primary-text);
 }
 
 .primary-button:hover {
   background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  box-shadow: 0 2px 4px rgba(0, 102, 204, 0.2);
+}
+
+.primary-button:active {
+  transform: scale(0.98);
 }
 
 .danger-button {
-  background: #f5f5f5;
+  background: #fff;
   border-color: var(--danger);
   color: var(--danger);
 }
 
 .danger-button:hover {
   background: var(--danger);
+  border-color: var(--danger-hover);
   color: #fff;
+}
+
+.danger-button:active {
+  transform: scale(0.98);
 }
 
 .icon-button {
@@ -567,9 +656,4 @@ body::after {
   min-width: 24px;
   padding: 4px 8px;
   white-space: nowrap;
-}
-
-.ghost-button:hover,
-.icon-button:hover {
-  background: #e0e0e0;
 }

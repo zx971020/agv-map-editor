@@ -15,13 +15,15 @@
   padding: 6px 8px;
   cursor: pointer;
   position: relative;
-  transition: all 0.2s;
+  transition: all var(--transition-fast);
+  user-select: none;
 }
 
 .map-item:hover {
   background: #f0f8ff;
   border-color: var(--primary);
   z-index: 1;
+  box-shadow: 0 1px 3px rgba(0, 102, 204, 0.1);
 }
 
 .map-item.active {
@@ -95,19 +97,22 @@
 /* 子地图样式微调 */
 .map-item.sub {
   padding: 4px 8px;
-  border: 1px solid transparent; /* 子地图默认无边框，减少视觉噪音 */
+  border: 1px solid transparent;
   background: transparent;
+  transition: all var(--transition-fast);
 }
 
 .map-item.sub:hover {
-  background: #f5f5f5;
-  border-color: #ddd;
+  background: #f8f8f8;
+  border-color: #e0e0e0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .map-item.sub.active {
   background: var(--selection);
   border-color: var(--primary);
-  border-left-width: 4px;
+  border-left-width: 3px;
+  box-shadow: 0 1px 3px rgba(0, 102, 204, 0.15);
 }
 
 /* 子地图连接横线 */
