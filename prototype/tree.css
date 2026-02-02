@@ -1,0 +1,123 @@
+/* 地图列表树形结构优化 */
+.map-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.map-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 8px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.map-item:hover {
+  background: #f0f8ff;
+  border-color: var(--primary);
+  z-index: 1;
+}
+
+.map-item.active {
+  background: var(--selection);
+  border-color: var(--primary);
+  border-left-width: 4px;
+}
+
+.map-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.map-icon.main {
+  background: #333;
+  color: #fff;
+}
+
+.map-icon.sub {
+  background: #fff;
+  color: #666;
+  border: 1px solid #ccc;
+}
+
+.map-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.map-name {
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.map-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.collapse-btn {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  font-size: 10px;
+  line-height: 14px;
+  border-radius: 2px;
+}
+
+/* 子地图容器 */
+.sub-maps {
+  margin-left: 10px;
+  padding-left: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+  border-left: 1px dashed #ccc; /* 树形连接线 */
+}
+
+/* 子地图样式微调 */
+.map-item.sub {
+  padding: 4px 8px;
+  border: 1px solid transparent; /* 子地图默认无边框，减少视觉噪音 */
+  background: transparent;
+}
+
+.map-item.sub:hover {
+  background: #f5f5f5;
+  border-color: #ddd;
+}
+
+.map-item.sub.active {
+  background: var(--selection);
+  border-color: var(--primary);
+  border-left-width: 4px;
+}
+
+/* 子地图连接横线 */
+.tree-connector {
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  width: 12px;
+  height: 1px;
+  background: #ccc;
+  border-bottom: 1px dashed #ccc; /* 虚线连接 */
+  background: transparent;
+}

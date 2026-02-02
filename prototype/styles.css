@@ -1,0 +1,575 @@
+:root {
+  /* 工业风色板 */
+  --bg: #e0e0e0;
+  --panel: #eeeeee;
+  --panel-header: #e0e0e0;
+  --border: #bcbcbc;
+  --border-focus: #4a90e2;
+  --text: #333333;
+  --text-dim: #666666;
+  --primary: #0066cc;
+  --primary-hover: #0052a3;
+  --primary-text: #ffffff;
+  --danger: #cc3300;
+  --selection: rgba(0, 102, 204, 0.1);
+  --radius: 2px; /* 极小圆角 */
+  --font-family: "Consolas", "Monaco", "Segoe UI", sans-serif; /* 增加等宽字体优先 */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  color: var(--text);
+  background: var(--bg);
+  overflow: hidden;
+  font-size: 14px; /* 整体字号放大 */
+}
+
+/* 移除之前的装饰元素 */
+body::before,
+body::after {
+  display: none;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 260px 1fr 300px;
+  height: 100vh;
+  transition: grid-template-columns 0.3s ease;
+}
+
+.app.properties-collapsed {
+  grid-template-columns: 260px 1fr 0px;
+}
+
+.sidebar,
+.properties {
+  background: var(--panel);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: auto;
+  border-right: 1px solid var(--border);
+}
+
+.properties {
+  border-right: none;
+  border-left: 1px solid var(--border);
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.properties.collapsed {
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  border-left: none;
+}
+
+.properties-toggle {
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 48px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-right: none;
+  border-radius: var(--radius) 0 0 var(--radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--text);
+  z-index: 10;
+  transition: all 0.3s ease;
+  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.properties-toggle:hover {
+  background: #e0e0e0;
+  color: var(--primary);
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.15);
+}
+
+.properties-toggle:active {
+  background: #d0d0d0;
+  transform: translateY(-50%) scale(0.95);
+}
+
+.properties.collapsed .properties-toggle {
+  left: -24px;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.properties.collapsed .properties-toggle:active {
+  transform: translateY(-50%) rotate(180deg) scale(0.95);
+}
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 0; /* 移除间隙，更加紧凑 */
+  padding: 0;
+  overflow: hidden;
+  background: #cdcdcd; /* 画布背景稍深，突出区域 */
+}
+
+.workspace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 12px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  height: 40px;
+}
+
+.breadcrumb {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text);
+  text-transform: uppercase; /* 工业感 */
+  letter-spacing: 0.5px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.panel {
+  background: #f5f5f5;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0; /* 标题栏分离 */
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: var(--panel-header);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+
+.panel-title {
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.panel-subtitle {
+  display: none; /* 工业风通常隐藏冗余信息 */
+}
+
+.panel-content {
+  padding: 10px;
+}
+
+/* 适配原HTML结构，因为原结构没有panel-content，直接对直接子元素调整 */
+.map-items, .element-grid, .property-grid {
+  padding: 10px;
+}
+
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 移除旧的 map-item 相关样式，避免冲突，将由 tree.css 接管 */
+/* .map-items, .map-item, .map-name, .map-meta 已在 tree.css 中重定义 */
+.map-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.element-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.element-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 4px;
+  text-align: center;
+  cursor: grab;
+  background: #fff;
+}
+
+.element-card:hover {
+  background: #f0f8ff;
+  border-color: var(--primary);
+}
+
+.element-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 2px;
+  margin: 0 auto 4px;
+  background: #eee;
+  color: #333;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border: 1px solid #ccc;
+}
+
+.element-label {
+  font-size: 12px;
+  color: var(--text);
+}
+
+.canvas-panel {
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+
+.canvas-toolbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  height: 36px;
+}
+
+.tool-group {
+  display: flex;
+  gap: 4px; /* 紧凑 */
+  align-items: center;
+}
+
+.tool-button {
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: var(--radius);
+  padding: 4px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.tool-button:hover {
+  background: #ddd;
+  border-color: #ccc;
+}
+
+.tool-button.active {
+  color: var(--primary-text);
+  background: var(--text-dim); /* 深灰背景表示选中，类似CAD */
+  border-color: var(--text);
+}
+
+.canvas-area {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 24px 1fr; /* 尺子更窄 */
+  grid-template-rows: 24px 1fr;
+  background: #888; /* 此时不可见，被viewport遮盖 */
+}
+
+.ruler-corner {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  background: #f0f0f0;
+  border-right: 1px solid #999;
+  border-bottom: 1px solid #999;
+}
+
+.ruler {
+  background: #f0f0f0;
+  color: #333;
+  font-size: 10px;
+}
+
+.ruler-top {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  border-bottom: 1px solid #999;
+  /* 简化尺子刻度 */
+  background-image: linear-gradient(to right, #ccc 1px, transparent 1px);
+  background-size: 50px 100%; 
+}
+
+.ruler-left {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  border-right: 1px solid #999;
+  background-image: linear-gradient(to bottom, #ccc 1px, transparent 1px);
+  background-size: 100% 50px;
+}
+
+.canvas-viewport {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  position: relative;
+  overflow: auto;
+  background: #eaeaeb; /* 经典 CAD 画布灰 */
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1); /* 内陷感 */
+}
+
+.canvas-stage {
+  position: relative;
+  width: 1600px;
+  height: 1200px;
+  transform-origin: top left;
+  background: #fff; /* 纸张白 */
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(#e5e5e5 1px, transparent 1px),
+    linear-gradient(90deg, #e5e5e5 1px, transparent 1px);
+  background-size: 20px 20px; /* 标准方格 */
+}
+
+.guide-line {
+  position: absolute;
+  background: #ff0000;
+  opacity: 0.6;
+}
+
+.guide-line.vertical {
+  width: 1px;
+  height: 100%;
+  left: 320px;
+  border-left: 1px dashed #ff0000;
+  background: transparent;
+}
+
+.guide-line.horizontal {
+  height: 1px;
+  width: 100%;
+  top: 240px;
+  border-top: 1px dashed #ff0000;
+  background: transparent;
+}
+
+.canvas-content {
+  position: absolute;
+  inset: 0;
+}
+
+.empty-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.bottom-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 12px;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  height: 36px;
+  font-size: 12px;
+}
+
+.zoom-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+.zoom-control input {
+  width: 80px;
+  height: 4px;
+}
+
+.property-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.property-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.property-item input,
+.property-item select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px 6px;
+  font-size: 13px;
+  color: var(--text);
+  background: #fff;
+  font-family: inherit;
+  height: 28px;
+}
+
+.property-item input:focus,
+.property-item select:focus {
+  outline: none;
+  border-color: var(--border-focus);
+}
+
+.node {
+  position: absolute;
+  width: 92px;
+  height: 72px;
+  border-radius: 2px;
+  border: 1px solid #333; /* 强硬边框 */
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: move;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1); /* 硬投影 */
+}
+
+.node:hover {
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+}
+
+.node.selected {
+  border: 1px solid var(--primary);
+  outline: 1px dashed var(--primary); /* 选中时虚线框 */
+  box-shadow: none;
+  background: #e6f7ff;
+}
+
+.node-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 0;
+  background: transparent;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid #000;
+}
+
+.node-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 覆盖特定类型的图标色，保持单色风格或低饱和 */
+.node[data-type="charging"] .node-icon {
+  background: #fff;
+  color: #000;
+  border-color: #20b26b;
+}
+
+.node[data-type="parking"] .node-icon {
+  background: #fff;
+  color: #000;
+  border-color: #5d4bff;
+}
+
+.node[data-type="path"] {
+  width: 120px;
+  height: 20px;
+  background: #f0f0f0;
+  border: 1px solid #999;
+}
+
+.node[data-type="path"] .node-icon {
+  display: none;
+}
+
+.ghost-button,
+.primary-button,
+.danger-button,
+.icon-button {
+  border-radius: var(--radius);
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  background: #f5f5f5;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #333;
+}
+
+.primary-button {
+  background: var(--primary);
+  border-color: var(--primary-hover);
+  color: #fff;
+}
+
+.primary-button:hover {
+  background: var(--primary-hover);
+}
+
+.danger-button {
+  background: #f5f5f5;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.danger-button:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+.icon-button {
+  padding: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#clearSelection {
+  width: auto;
+  min-width: 24px;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.ghost-button:hover,
+.icon-button:hover {
+  background: #e0e0e0;
+}

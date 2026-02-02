@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AGV 地图编辑器原型</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./tree.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <section class="panel map-list">
+          <header class="panel-header">
+            <div>
+              <div class="panel-title">地图列表</div>
+              <div class="panel-subtitle">示例地图</div>
+            </div>
+            <div class="panel-actions">
+              <button class="ghost-button">新增</button>
+              <button class="icon-button" title="更多">⋯</button>
+            </div>
+          </header>
+          <div class="map-items">
+            <!-- 主地图 -->
+            <div class="map-group">
+              <div class="map-item active">
+                <div class="map-icon main">M</div>
+                <div class="map-info">
+                  <div class="map-name">主厂区总图</div>
+                  <div class="map-meta">1600 × 1200 · 2个子图</div>
+                </div>
+                <button class="icon-button small collapse-btn">-</button>
+              </div>
+              
+              <!-- 子地图列表 -->
+              <div class="sub-maps">
+                <div class="map-tree-line"></div>
+                <div class="map-item sub">
+                  <div class="tree-connector"></div>
+                  <div class="map-icon sub">S</div>
+                  <div class="map-info">
+                    <div class="map-name">A区原料库</div>
+                    <div class="map-meta">800 × 600 · 关联点: 2</div>
+                  </div>
+                </div>
+                <div class="map-item sub">
+                  <div class="tree-connector"></div>
+                  <div class="map-icon sub">S</div>
+                  <div class="map-info">
+                    <div class="map-name">B区生产线</div>
+                    <div class="map-meta">1200 × 800 · 关联点: 3</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 另一个主地图（无子图） -->
+            <div class="map-group">
+               <div class="map-item">
+                <div class="map-icon main">M</div>
+                <div class="map-info">
+                  <div class="map-name">办公区测试</div>
+                  <div class="map-meta">800 × 800</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel elements">
+          <header class="panel-header">
+            <div>
+              <div class="panel-title">元素</div>
+              <div class="panel-subtitle">拖拽到画布</div>
+            </div>
+            <button class="icon-button" title="筛选">⛃</button>
+          </header>
+          <div class="element-grid" id="elementGrid">
+            <div class="element-card" draggable="true" data-type="workstation" data-label="工位">
+              <div class="element-icon">工</div>
+              <div class="element-label">工位</div>
+            </div>
+            <div class="element-card" draggable="true" data-type="ai_station" data-label="人工工位">
+              <div class="element-icon">人</div>
+              <div class="element-label">人工工位</div>
+            </div>
+            <div class="element-card" draggable="true" data-type="charging" data-label="充电站">
+              <div class="element-icon">充</div>
+              <div class="element-label">充电站</div>
+            </div>
+            <div class="element-card" draggable="true" data-type="elevator" data-label="机架升降">
+              <div class="element-icon">升</div>
+              <div class="element-label">机架升降</div>
+            </div>
+            <div class="element-card" draggable="true" data-type="gate" data-label="门">
+              <div class="element-icon">门</div>
+              <div class="element-label">门</div>
+            </div>
+            <div class="element-card" draggable="true" data-type="parking" data-label="停车区">
+              <div class="element-icon">停</div>
+              <div class="element-label">停车区</div>
+            </div>
+            <div class="element-card" draggable="true" data-type="path" data-label="路径">
+              <div class="element-icon">线</div>
+              <div class="element-label">路径</div>
+            </div>
+            <div class="element-card" draggable="true" data-type="dock" data-label="普通终点">
+              <div class="element-icon">终</div>
+              <div class="element-label">普通终点</div>
+            </div>
+            <div class="element-card" draggable="true" data-type="shelf" data-label="货架">
+              <div class="element-icon">货</div>
+              <div class="element-label">货架</div>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <header class="workspace-header">
+          <div class="breadcrumb">地图编辑 / 示例地图</div>
+          <div class="header-actions">
+            <button class="primary-button">发布</button>
+            <button class="ghost-button">预览</button>
+          </div>
+        </header>
+
+        <section class="canvas-panel">
+          <div class="canvas-toolbar">
+            <div class="tool-group">
+              <button class="tool-button active">选择</button>
+              <button class="tool-button">路径</button>
+              <button class="tool-button">区域</button>
+            </div>
+            <div class="tool-group">
+              <button class="tool-button">吸附</button>
+              <button class="tool-button">参考线</button>
+            </div>
+          </div>
+          <div class="canvas-area" id="canvasArea">
+            <div class="ruler-corner"></div>
+            <div class="ruler ruler-top"></div>
+            <div class="ruler ruler-left"></div>
+            <div class="canvas-viewport" id="canvasViewport">
+              <div class="canvas-stage" id="canvasStage">
+                <div class="grid"></div>
+                <div class="guide-line vertical"></div>
+                <div class="guide-line horizontal"></div>
+                <div class="canvas-content" id="canvasContent"></div>
+              </div>
+              <div class="empty-hint" id="emptyHint">拖拽元素到画布开始编辑</div>
+            </div>
+          </div>
+        </section>
+
+        <footer class="bottom-bar">
+          <div class="tool-group">
+            <button class="ghost-button">撤销</button>
+            <button class="ghost-button">重做</button>
+            <button class="ghost-button">地图导入</button>
+            <button class="ghost-button">数据导出</button>
+            <button class="ghost-button">保存</button>
+            <button class="danger-button">删除</button>
+          </div>
+          <div class="zoom-control">
+            <span class="zoom-label">缩放</span>
+            <input id="zoomRange" type="range" min="50" max="200" value="100" />
+            <span id="zoomValue">100%</span>
+          </div>
+        </footer>
+      </main>
+
+      <aside class="properties" id="propertiesPanel">
+        <button class="properties-toggle" id="propertiesToggle" title="折叠/展开属性栏">◀</button>
+        <section class="panel">
+          <header class="panel-header">
+            <div>
+              <div class="panel-title">地图属性</div>
+              <div class="panel-subtitle">基础尺寸</div>
+            </div>
+          </header>
+          <div class="property-grid">
+            <label class="property-item">
+              <span>宽度</span>
+              <input type="number" value="800" />
+            </label>
+            <label class="property-item">
+              <span>长度</span>
+              <input type="number" value="800" />
+            </label>
+            <label class="property-item">
+              <span>网格</span>
+              <select>
+                <option>10 px</option>
+                <option>20 px</option>
+                <option>40 px</option>
+              </select>
+            </label>
+            <label class="property-item">
+              <span>参考线</span>
+              <select>
+                <option>开启</option>
+                <option>关闭</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="panel">
+          <header class="panel-header">
+            <div>
+              <div class="panel-title">元素属性</div>
+              <div class="panel-subtitle" id="selectedLabel">未选择</div>
+            </div>
+            <button class="icon-button" id="clearSelection">清除</button>
+          </header>
+          <div class="property-grid" id="propertyGrid">
+            <label class="property-item">
+              <span>名称</span>
+              <input type="text" id="propName" placeholder="-" />
+            </label>
+            <label class="property-item">
+              <span>类型</span>
+              <input type="text" id="propType" disabled />
+            </label>
+            <label class="property-item">
+              <span>X</span>
+              <input type="number" id="propX" />
+            </label>
+            <label class="property-item">
+              <span>Y</span>
+              <input type="number" id="propY" />
+            </label>
+            <label class="property-item">
+              <span>宽</span>
+              <input type="number" id="propW" />
+            </label>
+            <label class="property-item">
+              <span>高</span>
+              <input type="number" id="propH" />
+            </label>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
