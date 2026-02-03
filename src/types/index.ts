@@ -19,6 +19,16 @@ export interface ElementConfig {
   color: string
 }
 
+// 元素列表项（来自 element-list.json）
+export interface ElementListItem {
+  icon: string
+  name: string
+  type: number
+  nodeAttr?: string
+  nodeType?: string
+  avoidable?: number
+}
+
 // 地图类型
 export type MapType = 'main' | 'sub'
 
