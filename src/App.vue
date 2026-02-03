@@ -1,10 +1,33 @@
 <template>
-  <div id="app" class="w-full h-screen">
-    <h1 class="text-2xl font-bold text-center p-8">AGV 地图编辑器</h1>
-    <p class="text-center text-gray-600">项目初始化中...</p>
-  </div>
+  <AppLayout>
+    <!-- 左侧栏 -->
+    <template #sidebar>
+      <MapList />
+      <ElementPanel />
+    </template>
+
+    <!-- 工作区 -->
+    <template #workspace>
+      <WorkspaceHeader />
+      <CanvasToolbar />
+      <CanvasArea />
+      <BottomBar />
+    </template>
+
+    <!-- 属性栏 -->
+    <template #properties>
+      <PropertiesPanel />
+    </template>
+  </AppLayout>
 </template>
 
 <script setup lang="ts">
-// 主应用组件
+import AppLayout from '@/components/layout/AppLayout.vue'
+import MapList from '@/components/sidebar/MapList.vue'
+import ElementPanel from '@/components/sidebar/ElementPanel.vue'
+import WorkspaceHeader from '@/components/workspace/WorkspaceHeader.vue'
+import CanvasToolbar from '@/components/workspace/CanvasToolbar.vue'
+import CanvasArea from '@/components/workspace/CanvasArea.vue'
+import BottomBar from '@/components/workspace/BottomBar.vue'
+import PropertiesPanel from '@/components/properties/PropertiesPanel.vue'
 </script>

@@ -159,7 +159,7 @@ body::after {
   justify-content: space-between;
   align-items: center;
   padding: 4px 12px;
-  background: var(--panel);
+  background: #ffffff;
   border-bottom: 1px solid var(--border);
   height: 40px;
 }
@@ -329,8 +329,8 @@ body::after {
 
 .tool-button.active {
   color: var(--primary-text);
-  background: var(--text-dim);
-  border-color: var(--text);
+  background: var(--primary);
+  border-color: var(--primary);
 }
 
 .canvas-area {
