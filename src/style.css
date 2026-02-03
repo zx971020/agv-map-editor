@@ -4,39 +4,91 @@
 
 @layer base {
   :root {
-    /* shadcn-vue 默认变量 - 调整为工业风格 */
-    --background: 224 10% 88%;        /* #e0e0e0 */
-    --foreground: 0 0% 20%;           /* #333333 */
-    
-    --card: 0 0% 93%;                 /* #eeeeee */
-    --card-foreground: 0 0% 20%;
-    
-    --popover: 0 0% 93%;
-    --popover-foreground: 0 0% 20%;
-    
-    --primary: 210 100% 40%;          /* #0066cc */
+    /* 现代化浅色模式 */
+    --background: 0 0% 100%; /* 纯白背景 */
+    --foreground: 222 47% 11%; /* 深蓝灰文字 #0f172a */
+
+    --card: 0 0% 100%; /* 卡片白色 */
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 221 83% 53%; /* 现代蓝 #3b82f6 */
     --primary-foreground: 0 0% 100%;
-    
-    --secondary: 0 0% 88%;
-    --secondary-foreground: 0 0% 20%;
-    
-    --muted: 0 0% 88%;
-    --muted-foreground: 0 0% 40%;     /* #666666 */
-    
-    --accent: 210 100% 40%;
+
+    --secondary: 214 32% 91%; /* 浅蓝灰 #e0e7ff */
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 220 13% 95%; /* 极浅灰 #f1f5f9 */
+    --muted-foreground: 215 16% 47%; /* 中灰 #64748b */
+
+    --accent: 221 83% 53%;
     --accent-foreground: 0 0% 100%;
-    
-    --destructive: 10 80% 40%;        /* #cc3300 */
+
+    --destructive: 0 84% 60%; /* 现代红 #ef4444 */
     --destructive-foreground: 0 0% 100%;
-    
-    --border: 0 0% 74%;               /* #bcbcbc */
-    --input: 0 0% 74%;
-    --ring: 210 100% 40%;
-    
-    --radius: 0.125rem;               /* 2px - 工业风格极小圆角 */
-    
-    /* 自定义字体 */
-    --font-sans: 'Consolas', 'Monaco', 'Segoe UI', sans-serif;
+
+    --border: 214 32% 91%; /* 浅边框 #e2e8f0 */
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.5rem; /* 现代化圆角 8px */
+
+    /* 自定义变量 */
+    --sidebar-bg: 220 13% 98%; /* 侧边栏背景 */
+    --canvas-bg: 210 20% 98%; /* 画布背景 */
+    --toolbar-bg: 0 0% 100%;
+    --panel-border: 214 32% 91%;
+
+    /* 阴影系统 */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+
+  .dark {
+    /* 现代化深色模式 */
+    --background: 222 47% 11%; /* 深蓝灰 #0f172a */
+    --foreground: 210 40% 98%; /* 浅色文字 #f8fafc */
+
+    --card: 217 33% 17%; /* 卡片深色 #1e293b */
+    --card-foreground: 210 40% 98%;
+
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217 91% 60%; /* 亮蓝 #3b82f6 */
+    --primary-foreground: 0 0% 100%; /* 深色模式下使用白色文字 */
+
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%; /* 深灰 #1e293b */
+    --muted-foreground: 215 20% 65%; /* 中灰 #94a3b8 */
+
+    --accent: 217 91% 60%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 24%; /* 深边框 #334155 */
+    --input: 217 33% 24%;
+    --ring: 217 91% 60%;
+
+    /* 自定义变量 */
+    --sidebar-bg: 222 47% 13%; /* 侧边栏深色 */
+    --canvas-bg: 217 33% 14%; /* 画布深色 */
+    --toolbar-bg: 217 33% 17%;
+    --panel-border: 217 33% 24%;
+
+    /* 深色模式阴影 */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
   }
 }
 
@@ -44,8 +96,124 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 自定义滚动条 - 现代化设计 */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/30;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/40;
+  }
+}
+
+@layer utilities {
+  /* 现代化工具类 */
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-xl border border-white/20;
+  }
+
+  .dark .glass-effect {
+    @apply bg-slate-900/80 backdrop-blur-xl border-slate-700/50;
+  }
+
+  .card-modern {
+    @apply bg-card rounded-xl border border-border shadow-sm;
+  }
+
+  .panel-modern {
+    @apply bg-card rounded-lg border border-border;
+  }
+
+  .button-modern {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .button-primary {
+    @apply button-modern bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm;
+  }
+
+  .button-secondary {
+    @apply button-modern bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+
+  .button-ghost {
+    @apply button-modern hover:bg-accent hover:text-accent-foreground;
+  }
+
+  .button-danger {
+    @apply button-modern bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm;
+  }
+
+  .input-modern {
+    @apply flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .sidebar-modern {
+    @apply bg-[hsl(var(--sidebar-bg))] border-r border-border;
+  }
+
+  .toolbar-modern {
+    @apply bg-[hsl(var(--toolbar-bg))] border-b border-border backdrop-blur-sm;
+  }
+
+  .canvas-modern {
+    @apply bg-[hsl(var(--canvas-bg))];
+  }
+
+  /* 动画工具类 */
+  .animate-in {
+    animation: animate-in 0.2s ease-out;
+  }
+
+  @keyframes animate-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.15s ease-out;
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 }
