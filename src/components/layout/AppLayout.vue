@@ -3,7 +3,7 @@
     <!-- 三栏 Grid 布局 -->
     <div
       class="grid h-full transition-all duration-300"
-      :class="propertiesCollapsed ? 'grid-cols-[280px_1fr_0px]' : 'grid-cols-[280px_1fr_320px]'"
+      :class="propertiesCollapsed ? 'grid-cols-[320px_1fr_0px]' : 'grid-cols-[320px_1fr_320px]'"
     >
       <!-- 左侧栏 - 现代化设计 -->
       <aside class="sidebar-modern flex flex-col gap-3 overflow-y-auto overflow-x-hidden p-3">

@@ -1,64 +1,56 @@
 [
-        {
-            "icon": "./images/station.png",
-            "name": "工位",
-            "type": 1,
-            "nodeAttr": "COMMON",
-            "nodeType": "LOAD"
-        },
-        {
-            "icon": "./images/deliveryPoint.png",
-            "name": "人工工位",
-            "type": 2,
-            "nodeAttr":"COMMON" ,
-            "nodeType":"LOAD"
-        },
-        {
-            "icon": "./images/chargingStation.png",
-            "name": "充电站",
-            "type": 3,
-            "nodeAttr": "COMMON",
-            "nodeType": "LOAD"
-        },
-        {
-            "icon": "./images/uprightPost.png",
-            "name": "机械手",
-            "type": 4,
-            "nodeAttr": "COMMON",
-            "nodeType": "LOAD"
-        },
-        {
-            "icon": "./images/house.png",
-            "name": "门",
-            "type": 5,
-            "nodeAttr": "COMMON",
-            "nodeType": "PATH"
-        },
-        {
-            "icon": "./images/parkingPoint.png",
-            "name": "停靠区",
-            "type": 6,
-            "nodeAttr": "COMMON",
-            "nodeType": "LOAD"
-        },
-        {
-            "icon": "./images/pathPoint.png",
-            "name": "普通路径点",
-            "type": 7,
-            "nodeAttr": "COMMON",
-            "nodeType": "PATH"
-        },
-        {
-            "icon": "./images/goodsShelves.png",
-            "name": "货架",
-            "type": 12
-        },
-        {
-            "icon": "./images/line_gray.png",
-            "name": "路径",
-            "type": 11,
-            "nodeAttr": "COMMON",
-            "nodeType": "PATH",
-            "avoidable":0
-        }
+  {
+    "icon": "briefcase",
+    "name": "工位",
+    "type": 1,
+    "nodeAttr": "COMMON",
+    "nodeType": "LOAD"
+  },
+  {
+    "icon": "user-circle",
+    "name": "人工工位",
+    "type": 2,
+    "nodeAttr": "COMMON",
+    "nodeType": "LOAD"
+  },
+  {
+    "icon": "bolt",
+    "name": "充电站",
+    "type": 3,
+    "nodeAttr": "COMMON",
+    "nodeType": "LOAD"
+  },
+  {
+    "icon": "cog",
+    "name": "机械手",
+    "type": 4,
+    "nodeAttr": "COMMON",
+    "nodeType": "LOAD"
+  },
+  {
+    "icon": "home",
+    "name": "门",
+    "type": 5,
+    "nodeAttr": "COMMON",
+    "nodeType": "PATH"
+  },
+  {
+    "icon": "stop",
+    "name": "停靠区",
+    "type": 6,
+    "nodeAttr": "COMMON",
+    "nodeType": "LOAD"
+  },
+  {
+    "icon": "map-pin",
+    "name": "普通路径点",
+    "type": 7,
+    "nodeAttr": "COMMON",
+    "nodeType": "PATH"
+  },
+  {
+    "icon": "archive",
+    "name": "货架",
+    "type": 12
+  }
 ]
