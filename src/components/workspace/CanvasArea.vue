@@ -288,21 +288,39 @@ const handleDrop = (e: DragEvent) => {
   try {
     const elementData: ElementListItem = JSON.parse(e.dataTransfer.getData('application/json'))
 
-    // 获取鼠标在容器中的位置
-    const containerRect = containerRef.value?.getBoundingClientRect()
-    if (!containerRect) return
+    // 获取 Stage 和 Canvas 元素
+    const stage = stageRef.value?.getStage()
+    if (!stage) return
 
-    const mouseX = e.clientX - containerRect.left
-    const mouseY = e.clientY - containerRect.top
+    // 获取 canvas 元素的位置
+    const canvas = stage.content.querySelector('canvas')
+    if (!canvas) return
+
+    const canvasRect = canvas.getBoundingClientRect()
+
+    // 计算鼠标相对于 canvas 的位置
+    const mouseX = e.clientX - canvasRect.left
+    const mouseY = e.clientY - canvasRect.top
 
     // 转换为画布坐标（笛卡尔坐标系）
-    const canvasX = (mouseX - canvasStore.viewport.x) / canvasStore.viewport.scale
-    const canvasY = (mouseY - canvasStore.viewport.y) / canvasStore.viewport.scale
+    // 注意：Y 轴需要翻转，因为 Stage 的 scaleY 是负数
+    const scale = canvasStore.viewport.scale
+    const canvasX = (mouseX - canvasStore.viewport.x) / scale
+    const canvasY = -(mouseY - canvasStore.viewport.y) / scale
 
     // 吸附到网格
     const snappedPos = canvasStore.snapToGridPoint(canvasX, canvasY)
 
-    console.log('拖放元素:', elementData.name, '位置:', snappedPos)
+    console.log(
+      '拖放元素:',
+      elementData.name,
+      '鼠标位置:',
+      { mouseX, mouseY },
+      '画布坐标:',
+      { canvasX, canvasY },
+      '吸附后:',
+      snappedPos
+    )
 
     // 添加节点到画布
     canvasStore.addNode({
