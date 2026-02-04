@@ -34,9 +34,9 @@
       >
         <!-- 元素图标 - SVG -->
         <div
-          class="flex h-11 w-11 items-center justify-center rounded-md bg-primary/10 text-primary transition-all group-hover:scale-105 group-hover:bg-primary/20"
+          class="flex items-center justify-center transition-all rounded-md h-11 w-11 bg-primary/10 text-primary group-hover:scale-105 group-hover:bg-primary/20"
         >
-          <component :is="getIconComponent(element.icon)" class="h-6 w-6" />
+          <component :is="getIconComponent(element.icon)" class="w-6 h-6" />
         </div>
 
         <!-- 元素标签 -->
@@ -240,7 +240,7 @@ const getIconComponent = (iconName: string) => {
 }
 
 // 处理拖拽开始
-const handleDragStart = (event: DragEvent, element: ElementListItem) => {
+const handleDragStart = (event: DragEvent, element: ElementListItem) => { 
   if (!event.dataTransfer) return
 
   // 设置拖拽数据

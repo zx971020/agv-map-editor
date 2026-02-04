@@ -4,298 +4,348 @@
 
 ## 项目概述
 
-AGV 地图编辑器是一个基于 Web 的可视化编辑器，用于创建和管理 AGV（自动导引车）地图，支持分层地图结构、拖放元素放置和工业风格的 UI 设计。
+AGV 地图编辑器是一个基于 Web 的可视化编辑器，用于创建和管理 AGV（自动导引车）地图，支持分层地图结构、拖放元素放置和现代化 UI 设计。
 
-**技术栈：** 原生 JavaScript、HTML5、CSS3（无框架）
-**语言：** 中文（zh-CN）用于 UI 文本和注释
-**目标：** 支持 ES6+ 的现代浏览器
+**技术栈：** Vue 3 (Composition API) + TypeScript + Vite + Konva.js + Tailwind CSS + Pinia  
+**语言：** 中文（zh-CN）用于 UI 文本和注释  
+**目标：** 支持现代浏览器（Chrome、Edge、Firefox、Safari）
 
 ## 项目结构
 
 ```
 agv-map-editor/
-├── prototype/           # 当前工作原型
-│   ├── index.html      # 主应用程序结构
-│   ├── app.js          # 核心应用逻辑
-│   ├── styles.css      # 主样式（工业主题）
-│   └── tree.css        # 地图树/层级样式
-└── AGENTS.md           # 本文件
+├── src/
+│   ├── components/       # Vue 组件
+│   │   ├── layout/      # 布局组件
+│   │   ├── sidebar/     # 侧边栏组件（地图列表、元素面板）
+│   │   ├── workspace/   # 工作区组件（画布、工具栏）
+│   │   └── properties/  # 属性面板组件
+│   ├── composables/     # Vue Composables（可复用逻辑）
+│   ├── config/          # 配置文件
+│   ├── lib/             # 工具函数
+│   ├── types/           # TypeScript 类型定义
+│   ├── assets/          # 静态资源（图片、JSON）
+│   ├── App.vue          # 根组件
+│   └── main.ts          # 应用入口
+├── prototype/           # 原型代码（原生 JS 版本）
+└── AGENTS.md            # 本文件
 ```
 
 ## 构建/检查/测试命令
 
-**注意：** 本项目目前没有构建系统、package.json 或测试框架。
-
 ### 开发
-- 直接在浏览器中打开 `prototype/index.html`
-- 使用浏览器开发者工具进行调试
-- 推荐使用 Live Server 或类似工具实现热重载
+
+```bash
+npm run dev              # 启动开发服务器（http://localhost:3000）
+```
+
+### 构建
+
+```bash
+npm run build            # 类型检查 + 生产构建
+vue-tsc                  # 仅运行 TypeScript 类型检查
+```
+
+### 代码质量
+
+```bash
+npm run lint             # 运行 ESLint 并自动修复
+npm run format           # 使用 Prettier 格式化代码
+```
 
 ### 测试
-- 需要在浏览器中手动测试
-- 在 Chrome/Edge 中测试（主要目标）
-- 目前不存在自动化测试套件
 
-### 未来考虑
-添加构建工具时，考虑：
-- Vite 或 Parcel 用于打包
-- ESLint 用于代码检查
-- Vitest 或 Jest 用于测试
+**注意：** 目前项目没有自动化测试套件。测试通过浏览器手动进行。
 
 ## 代码风格指南
 
-### 通用原则
-- **简单优先：** 优先使用原生 JS 而非框架
-- **工业美学：** 简洁、功能性、最小装饰
-- **性能：** 优化画布交互的流畅性
-- **可访问性：** 使用语义化 HTML 和 ARIA 标签
-
-### JavaScript 风格
+### TypeScript 风格
 
 #### 命名约定
-- **变量/函数：** `camelCase`（例如：`canvasStage`、`updateSelection`）
-- **常量：** DOM 引用使用 `camelCase`，真正的常量使用 `UPPER_SNAKE_CASE`
-- **CSS 类名：** `kebab-case`（例如：`map-item`、`canvas-stage`）
-- **数据属性：** `kebab-case`（例如：`data-type`、`data-label`）
+
+- **变量/函数：** `camelCase`（例如：`canvasWidth`、`updateSelection`）
+- **类型/接口：** `PascalCase`（例如：`ElementType`、`MapItem`）
+- **常量：** `UPPER_SNAKE_CASE`（例如：`CANVAS_CONFIG`、`DEFAULT_WIDTH`）
+- **组件文件：** `PascalCase.vue`（例如：`CanvasArea.vue`）
+- **CSS 类名：** Tailwind 工具类 + `kebab-case` 自定义类
+
+#### 类型定义
+
+```typescript
+// 优先使用 type 定义联合类型
+export type ElementType = 'workstation' | 'charging' | 'elevator'
+
+// 使用 interface 定义对象结构
+export interface MapItem {
+  id: string
+  name: string
+  type: MapType
+  width: number
+  height: number
+}
+
+// 避免使用 any，使用 unknown 或具体类型
+const data: unknown = fetchData()
+```
 
 #### 变量声明
-```javascript
+
+```typescript
 // 默认使用 const
-const canvasStage = document.getElementById("canvasStage");
+const canvasWidth = ref(800)
 
 // 仅在需要重新赋值时使用 let
-let selectedNode = null;
-let isDragging = false;
+let isDragging = false
 
 // 完全避免使用 var
 ```
 
-#### 函数
-```javascript
-// 简单操作使用箭头函数
-const updateEmptyHint = () => {
-  emptyHint.style.display = canvasContent.children.length ? "none" : "block";
-};
+### Vue 3 风格
 
-// 复杂逻辑使用命名函数
-function createNode({ type, label, x, y }) {
-  // 实现代码
+#### 组件结构（推荐顺序）
+
+```vue
+<template>
+  <!-- 模板内容 -->
+</template>
+
+<script setup lang="ts">
+// 1. 导入
+import { ref, computed, onMounted } from 'vue'
+import type { MapItem } from '@/types'
+
+// 2. Props 和 Emits
+const props = defineProps<{
+  mapId: string
+}>()
+
+const emit = defineEmits<{
+  update: [value: string]
+}>()
+
+// 3. 响应式状态
+const count = ref(0)
+
+// 4. 计算属性
+const doubled = computed(() => count.value * 2)
+
+// 5. 方法
+const increment = () => {
+  count.value++
 }
 
-// 对象参数使用解构
-const toCanvasPoint = (clientX, clientY) => {
-  const rect = canvasViewport.getBoundingClientRect();
-  return { x, y };
-};
+// 6. 生命周期钩子
+onMounted(() => {
+  // 初始化逻辑
+})
+</script>
+
+<style scoped>
+/* 组件样式 */
+</style>
 ```
 
-#### 事件处理器
-```javascript
-// 直接将监听器附加到元素上
-node.addEventListener("mousedown", (event) => {
-  if (event.button !== 0) return; // 守卫子句优先
-  updateSelection(node);
-  isDragging = true;
-});
+#### Composables 模式
 
-// 适当时对动态元素使用事件委托
-```
+```typescript
+// src/composables/useDarkMode.ts
+import { ref, onMounted } from 'vue'
 
-#### DOM 操作
-```javascript
-// 在模块级别缓存 DOM 引用
-const canvasContent = document.getElementById("canvasContent");
+export function useDarkMode() {
+  const isDark = ref(false)
 
-// 使用模板字面量生成 HTML
-node.innerHTML = `
-  <div class="node-icon">${label.slice(0, 1)}</div>
-  <div class="node-label">${label}</div>
-`;
+  const toggleDarkMode = () => {
+    isDark.value = !isDark.value
+    localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
+  }
 
-// 优先使用 classList 而非 className 操作
-node.classList.add("selected");
-node.classList.remove("selected");
-```
+  onMounted(() => {
+    // 初始化逻辑
+  })
 
-### CSS 风格
-
-#### 组织结构
-1. CSS 变量（`:root`）
-2. 重置/基础样式
-3. 布局（grid、flex）
-4. 组件（面板、按钮等）
-5. 状态修饰符（`:hover`、`.active`、`.selected`）
-
-#### 命名
-```css
-/* 基于组件的命名 */
-.map-item { }
-.map-item.active { }
-.map-item.sub { }
-
-/* 需要时使用类 BEM 结构 */
-.panel-header { }
-.panel-title { }
-.panel-subtitle { }
-```
-
-#### 变量
-```css
-:root {
-  --bg: #e0e0e0;
-  --panel: #eeeeee;
-  --border: #bcbcbc;
-  --primary: #0066cc;
-  --text: #333333;
-  --radius: 2px; /* 工业风格的最小圆角 */
+  return {
+    isDark,
+    toggleDarkMode,
+  }
 }
 ```
 
-#### 值
-- 精确布局和边框使用 `px`
-- 响应式网格使用 `%` 或 `fr`
-- 谨慎使用 `rem`/`em`（项目使用基于 px 的尺寸）
-- 优先使用简写属性：`padding: 4px 8px;`
+### 导入规范
 
-### HTML 风格
+#### 导入顺序
 
-#### 结构
-```html
-<!-- 语义化 HTML5 元素 -->
-<aside class="sidebar">
-  <section class="panel">
-    <header class="panel-header">
-      <!-- 头部内容 -->
-    </header>
-    <!-- 面板内容 -->
-  </section>
-</aside>
+```typescript
+// 1. Vue 核心
+import { ref, computed, onMounted } from 'vue'
+
+// 2. 第三方库
+import { useVueKonva } from 'vue-konva'
+
+// 3. 类型导入（使用 type 关键字）
+import type { ElementType, MapItem } from '@/types'
+
+// 4. 组件导入
+import CanvasArea from '@/components/workspace/CanvasArea.vue'
+
+// 5. Composables
+import { useDarkMode } from '@/composables/useDarkMode'
+
+// 6. 工具函数
+import { cn } from '@/lib/utils'
+
+// 7. 配置和常量
+import { CANVAS_CONFIG } from '@/config'
 ```
 
-#### 属性
-- 使用 `data-*` 属性存储应用状态
-- 为图标按钮添加 `title` 属性
-- 为拖拽源显式设置 `draggable="true"`
+#### 路径别名
 
-### 注释
+```typescript
+// 使用 @ 别名引用 src 目录
+import { ElementType } from '@/types'
+import CanvasArea from '@/components/workspace/CanvasArea.vue'
 
-#### JavaScript 注释
-```javascript
-// 简短说明使用单行注释
-// UI 相关注释使用中文：更新选中状态
-
-// 复杂逻辑使用多行注释
-/**
- * 将客户端坐标转换为画布坐标
- * 考虑缩放和滚动偏移
- */
+// 避免相对路径（除非同目录）
+// ❌ import { utils } from '../../../lib/utils'
+// ✅ import { utils } from '@/lib/utils'
 ```
 
-#### CSS 注释
-```css
-/* 章节标题使用中文 */
-/* 地图列表树形结构优化 */
+### Tailwind CSS 风格
 
-/* 组件描述 */
-/* 子地图连接横线 */
+#### 类名组织
+
+```vue
+<template>
+  <!-- 按功能分组：布局 → 尺寸 → 外观 → 交互 → 响应式 -->
+  <div
+    class="flex flex-col items-center gap-4 w-full h-screen bg-white dark:bg-slate-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+  >
+    <!-- 内容 -->
+  </div>
+</template>
+```
+
+#### 使用 cn() 工具函数
+
+```typescript
+import { cn } from '@/lib/utils'
+
+// 条件类名合并
+const buttonClass = cn(
+  'px-4 py-2 rounded-lg',
+  isActive && 'bg-primary text-white',
+  isDisabled && 'opacity-50 cursor-not-allowed'
+)
 ```
 
 ### 错误处理
 
-```javascript
+```typescript
 // 使用守卫子句提前返回
-if (!data) return;
-if (event.button !== 0) return;
+if (!data) return
+if (event.button !== 0) return
 
-// 验证数字输入
-const nextX = Number(propX.value);
-if (!Number.isNaN(nextX)) {
-  selectedNode.style.left = `${nextX}px`;
+// 类型安全的错误处理
+try {
+  const result = await fetchData()
+  // 处理结果
+} catch (error) {
+  if (error instanceof Error) {
+    console.error('Error:', error.message)
+  }
 }
 
-// 使用 Math.max/min 进行边界检查
-selectedNode.style.left = `${Math.max(0, newX)}px`;
+// 可选链和空值合并
+const value = data?.property ?? defaultValue
 ```
 
-### 状态管理
+### 注释规范
 
-```javascript
-// 模块级状态变量
-let currentScale = 1;
-let selectedNode = null;
-let isDragging = false;
+```typescript
+// 简短说明使用单行注释（中文）
+// 更新画布缩放比例
 
-// 在专用函数中更新 UI
-const updateSelection = (node) => {
-  // 清除之前的状态
-  if (selectedNode) {
-    selectedNode.classList.remove("selected");
-  }
-  // 设置新状态
-  selectedNode = node;
-  // 更新 UI
-  if (selectedNode) {
-    selectedNode.classList.add("selected");
-  }
-};
+/**
+ * 复杂函数使用 JSDoc 注释
+ * @param x - X 坐标
+ * @param y - Y 坐标
+ * @returns 转换后的画布坐标
+ */
+function toCanvasPoint(x: number, y: number): { x: number; y: number } {
+  // 实现
+}
 ```
 
-## 设计模式
+## ESLint 和 Prettier 配置
 
-### 工业 UI 主题
-- 最小圆角（`--radius: 2px`）
-- 强边框和清晰分隔
-- 柔和色调配高对比度
-- CAD 风格画布，带网格和标尺
-- 标题使用大写字母（`text-transform: uppercase`）
+### ESLint 规则
 
-### 画布交互
-- 从元素面板拖放到画布
-- 点击选择，拖动移动
-- 属性面板实时更新
-- 使用范围滑块缩放（50%-200%）
+- 使用单引号（`singleQuote: true`）
+- 不使用分号（`semi: false`）
+- 箭头函数参数省略括号（`arrowParens: 'avoid'`）
+- 行宽限制 100 字符（`printWidth: 100`）
+- 未使用的变量警告（以 `_` 开头的参数除外）
 
-### 地图层级
-- 主地图带可折叠子地图
-- 使用 CSS 边框的树形连接器
-- 主地图/子地图的视觉区分
+### 自动格式化
+
+保存文件时建议配置编辑器自动运行 Prettier 格式化。
 
 ## 常见任务
 
-### 添加新元素类型
-1. 在 `index.html` 元素网格中添加元素卡片
-2. 设置 `data-type` 和 `data-label` 属性
-3. 如需要，在 `styles.css` 中添加特定类型样式
-4. 图标将从标签的第一个字符自动生成
+### 添加新组件
 
-### 修改画布行为
-- 在 `app.js` 中编辑事件处理器
-- 更新 `toCanvasPoint()` 进行坐标转换
-- 修改 `createNode()` 进行元素创建逻辑
+```bash
+# 在相应目录创建 .vue 文件
+src/components/workspace/NewComponent.vue
+```
 
-### 样式更改
-- 全局主题：编辑 `styles.css` 中的 CSS 变量
-- 地图树：编辑 `tree.css`
-- 特定组件：在 `styles.css` 中查找相关类
+### 添加新类型
+
+```typescript
+// src/types/index.ts
+export interface NewType {
+  id: string
+  name: string
+}
+```
+
+### 添加新 Composable
+
+```typescript
+// src/composables/useNewFeature.ts
+export function useNewFeature() {
+  // 实现
+  return {
+    /* 导出的状态和方法 */
+  }
+}
+```
+
+### 修改画布配置
+
+```typescript
+// src/config/index.ts
+export const CANVAS_CONFIG = {
+  defaultWidth: 800,
+  defaultHeight: 600,
+  // ...
+}
+```
 
 ## 最佳实践
 
-1. **保持简单：** 避免过度设计，这是一个原型
-2. **测试交互：** 拖放、选择、缩放应该流畅
-3. **保持一致性：** 遵循代码库中的现有模式
-4. **中文 UI：** 所有面向用户的文本应使用中文
-5. **工业美学：** 保持 CAD/工程工具的外观
-6. **性能：** 最小化重排，缓存 DOM 查询
-7. **可访问性：** 使用语义化 HTML 和适当的 ARIA 标签
+1. **类型安全：** 充分利用 TypeScript，避免使用 `any`
+2. **组合式 API：** 使用 `<script setup>` 语法
+3. **响应式：** 使用 `ref`、`reactive`、`computed` 管理状态
+4. **可复用性：** 将可复用逻辑提取到 Composables
+5. **性能：** 使用 `v-memo`、`v-once` 优化渲染
+6. **可访问性：** 使用语义化 HTML 和 ARIA 属性
+7. **中文 UI：** 所有面向用户的文本使用中文
+8. **代码一致性：** 遵循 ESLint 和 Prettier 规则
 
-## 未来增强
+## 开发注意事项
 
-扩展此项目时，考虑：
-- 添加撤销/重做功能
-- 实现地图数据的保存/加载
-- 添加路径绘制工具
-- 支持地图导出格式
-- 添加键盘快捷键
-- 实现缩放至适应/实际大小
-- 添加吸附网格功能
-- 支持多选和组操作
+- **原型代码：** `prototype/` 目录包含原生 JS 原型，不要修改
+- **主应用：** 所有新功能在 `src/` 目录开发
+- **状态管理：** 复杂状态考虑使用 Pinia
+- **画布渲染：** 使用 Konva.js 和 vue-konva 处理画布交互
+- **样式系统：** 优先使用 Tailwind CSS 工具类

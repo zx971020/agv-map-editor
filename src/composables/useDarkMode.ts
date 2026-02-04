@@ -1,5 +1,5 @@
 // 深色模式 Composable
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const isDark = ref(false)
 
@@ -48,6 +48,7 @@ export function useDarkMode() {
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = (e: MediaQueryListEvent) => {
+      // 只有在用户没有手动设置主题时，才跟随系统主题
       if (!localStorage.getItem('theme')) {
         isDark.value = e.matches
         applyTheme()
@@ -56,9 +57,10 @@ export function useDarkMode() {
 
     mediaQuery.addEventListener('change', handleChange)
 
-    return () => {
+    // 清理事件监听器
+    onBeforeUnmount(() => {
       mediaQuery.removeEventListener('change', handleChange)
-    }
+    })
   })
 
   return {
