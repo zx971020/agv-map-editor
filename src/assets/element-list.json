@@ -51,6 +51,8 @@
   {
     "icon": "archive",
     "name": "货架",
-    "type": 12
+    "type": 12,
+    "nodeAttr": "COMMON",
+    "nodeType": "LOAD"
   }
 ]

@@ -23,9 +23,9 @@ export const useCanvasStore = defineStore('canvas', () => {
 
   // 网格配置
   const grid = ref<GridConfig>({
-    show: false,
+    show: true,
     size: 20,
-    snapToGrid: false,
+    snapToGrid: true,
     snapThreshold: 5,
   })
 

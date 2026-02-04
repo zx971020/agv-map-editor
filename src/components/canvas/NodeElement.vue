@@ -1,66 +1,16 @@
 <template>
-  <v-group
-    :config="{
-      x: node.x,
-      y: node.y,
-      rotation: node.rotation,
-      draggable: true,
-    }"
-    @click="handleClick"
-    @dragend="handleDragEnd"
-  >
+  <v-group :config="groupConfig" @click="handleClick" @dragend="handleDragEnd">
     <!-- 背景圆形 -->
-    <v-circle
-      :config="{
-        x: 0,
-        y: 0,
-        radius: node.width / 2,
-        fill: isSelected ? '#3b82f6' : '#60a5fa',
-        stroke: isSelected ? '#1e40af' : '#3b82f6',
-        strokeWidth: 2,
-        shadowColor: 'black',
-        shadowBlur: 10,
-        shadowOpacity: 0.3,
-        shadowOffsetY: -5,
-      }"
-    />
+    <v-circle :config="circleConfig" />
 
     <!-- 元素图标（简单的文字） -->
-    <v-text
-      :config="{
-        x: -10,
-        y: 10,
-        text: getIconText(node.type),
-        fontSize: 20,
-        fill: 'white',
-        scaleY: -1,
-      }"
-    />
+    <v-text :config="iconConfig" />
 
     <!-- 元素标签 -->
-    <v-text
-      :config="{
-        x: -node.label.length * 3,
-        y: -(node.height / 2 + 5),
-        text: node.label,
-        fontSize: 12,
-        fill: '#1f2937',
-        scaleY: -1,
-      }"
-    />
+    <v-text :config="labelConfig" />
 
     <!-- 选中状态指示器 -->
-    <v-circle
-      v-if="isSelected"
-      :config="{
-        x: 0,
-        y: 0,
-        radius: node.width / 2 + 5,
-        stroke: '#3b82f6',
-        strokeWidth: 3,
-        dash: [5, 5],
-      }"
-    />
+    <v-circle v-if="isSelected" :config="selectionConfig" />
   </v-group>
 </template>
 
@@ -74,6 +24,14 @@ const props = defineProps<{
 }>()
 
 const canvasStore = useCanvasStore()
+
+// 组件配置（使用 computed 确保响应式更新）
+const groupConfig = computed(() => ({
+  x: props.node.x,
+  y: props.node.y,
+  rotation: props.node.rotation,
+  draggable: true,
+}))
 
 // 是否选中
 const isSelected = computed(() => {
@@ -94,6 +52,50 @@ const getIconText = (type: number): string => {
   }
   return iconMap[type] || '?'
 }
+
+// 圆形配置（响应式）
+const circleConfig = computed(() => ({
+  x: 0,
+  y: 0,
+  radius: props.node.width / 2,
+  fill: isSelected.value ? '#3b82f6' : '#60a5fa',
+  stroke: isSelected.value ? '#1e40af' : '#3b82f6',
+  strokeWidth: 2,
+  shadowColor: 'black',
+  shadowBlur: 10,
+  shadowOpacity: 0.3,
+  shadowOffsetY: -5,
+}))
+
+// 图标配置（响应式）
+const iconConfig = computed(() => ({
+  x: -10,
+  y: 10,
+  text: getIconText(props.node.type),
+  fontSize: 20,
+  fill: 'white',
+  scaleY: -1,
+}))
+
+// 标签配置（响应式）
+const labelConfig = computed(() => ({
+  x: -props.node.label.length * 3,
+  y: -(props.node.height / 2 + 5),
+  text: props.node.label,
+  fontSize: 12,
+  fill: '#1f2937',
+  scaleY: -1,
+}))
+
+// 选中指示器配置（响应式）
+const selectionConfig = computed(() => ({
+  x: 0,
+  y: 0,
+  radius: props.node.width / 2 + 5,
+  stroke: '#3b82f6',
+  strokeWidth: 3,
+  dash: [5, 5],
+}))
 
 // 点击事件
 const handleClick = (e: any) => {

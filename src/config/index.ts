@@ -1,5 +1,3 @@
-// AGV 地图编辑器配置文件
-import type { ElementConfig, ElementType } from '@/types'
 
 // 画布配置
 export const CANVAS_CONFIG = {
@@ -27,18 +25,6 @@ export const CANVAS_CONFIG = {
   snapThreshold: 5,
 }
 
-// 元素配置
-export const ELEMENT_CONFIG: Record<ElementType, ElementConfig> = {
-  workstation: { label: '工位', icon: '工', color: '#0066cc' },
-  ai_station: { label: '人工工位', icon: '人', color: '#00aa66' },
-  charging: { label: '充电站', icon: '充', color: '#ff9900' },
-  elevator: { label: '机架升降', icon: '升', color: '#9933cc' },
-  gate: { label: '门', icon: '门', color: '#cc3333' },
-  parking: { label: '停车区', icon: '停', color: '#666666' },
-  path: { label: '路径', icon: '线', color: '#333333' },
-  dock: { label: '普通终点', icon: '终', color: '#0066cc' },
-  shelf: { label: '货架', icon: '货', color: '#cc6600' },
-}
 
 // 地图配置
 export const MAP_CONFIG = {

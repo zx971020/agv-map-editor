@@ -29,6 +29,7 @@ export interface ElementListItem {
   avoidable?: number
 }
 
+
 // 地图类型
 export type MapType = 'main' | 'sub'
 

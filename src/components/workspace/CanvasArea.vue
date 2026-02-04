@@ -7,6 +7,13 @@
       @dragover.prevent="handleDragOver"
       @drop.prevent="handleDrop"
     >
+      <!-- DOM 网格层（在画布下层） -->
+      <div
+        v-if="canvasStore.grid.show"
+        class="absolute inset-0 pointer-events-none"
+        :style="gridStyle"
+      ></div>
+
       <v-stage
         ref="stageRef"
         :config="stageConfig"
@@ -15,9 +22,6 @@
         @mousemove="handleMouseMove"
         @mouseup="handleMouseUp"
       >
-        <!-- 网格层 -->
-        <GridLayer />
-
         <!-- 标尺层 -->
         <RulerLayer />
 
@@ -81,7 +85,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
-import GridLayer from '@/components/canvas/GridLayer.vue'
 import RulerLayer from '@/components/canvas/RulerLayer.vue'
 import NodeElement from '@/components/canvas/NodeElement.vue'
 import type { ElementListItem } from '@/types'
@@ -125,7 +128,45 @@ const visibleNodes = computed(() => {
   })
 })
 
-// Stage 配置（右手笛卡尔坐标系 + 无极缩放）
+// DOM 网格样式
+const gridStyle = computed(() => {
+  const baseSize = canvasStore.gridBaseSize
+  const scale = canvasStore.viewport.scale
+  const x = canvasStore.viewport.x
+  const y = canvasStore.viewport.y
+
+  // 计算网格大小（屏幕像素）
+  const gridSize = baseSize * scale
+  const majorGridSize = gridSize * 5
+
+  // 计算偏移量（考虑笛卡尔坐标系的 Y 轴翻转）
+  const offsetX = x % gridSize
+  const offsetY = y % gridSize
+
+  return {
+    backgroundImage: `
+      linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+      linear-gradient(to bottom, #e5e7eb 1px, transparent 1px),
+      linear-gradient(to right, #d1d5db 1.5px, transparent 1.5px),
+      linear-gradient(to bottom, #d1d5db 1.5px, transparent 1.5px)
+    `,
+    backgroundSize: `
+      ${gridSize}px ${gridSize}px,
+      ${gridSize}px ${gridSize}px,
+      ${majorGridSize}px ${majorGridSize}px,
+      ${majorGridSize}px ${majorGridSize}px
+    `,
+    backgroundPosition: `
+      ${offsetX}px ${offsetY}px,
+      ${offsetX}px ${offsetY}px,
+      ${offsetX}px ${offsetY}px,
+      ${offsetX}px ${offsetY}px
+    `,
+    opacity: '0.6',
+  }
+})
+
+// Stage 配置（右手笛卡尔坐标系 + 无极缩放 + 透明背景）
 // viewport.x/y 直接对应 Stage 的 x/y（屏幕坐标）
 const stageConfig = computed(() => ({
   width: containerWidth.value,
@@ -135,6 +176,8 @@ const stageConfig = computed(() => ({
   scaleX: canvasStore.viewport.scale,
   scaleY: -canvasStore.viewport.scale, // Y 轴翻转实现笛卡尔坐标系
   draggable: false,
+  // 设置透明背景，让下层的 DOM 网格可见
+  container: undefined,
 }))
 
 // 拖动状态
@@ -292,5 +335,10 @@ const handleDrop = (e: DragEvent) => {
 
 .canvas-area.panning:active {
   cursor: grabbing;
+}
+
+/* 确保 Konva Canvas 背景透明，让下层的 DOM 网格可见 */
+:deep(canvas) {
+  background: transparent !important;
 }
 </style>
