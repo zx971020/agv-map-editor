@@ -83,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, reactive } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
 import RulerLayer from '@/components/canvas/RulerLayer.vue'
 import NodeElement from '@/components/canvas/NodeElement.vue'
@@ -322,19 +322,14 @@ const handleDrop = (e: DragEvent) => {
       snappedPos
     )
 
-    // 添加节点到画布
-    canvasStore.addNode({
-      id: `node_${Date.now()}`,
+    // 使用新的 addNodeFromData 方法添加节点
+    // 图形属性（width, height, rotation, label）由 createNode 自动补充默认值
+    canvasStore.addNodeFromData({
       type: elementData.type,
-      label: elementData.name,
       x: snappedPos.x,
       y: snappedPos.y,
-      width: 50,
-      height: 50,
-      rotation: 0,
       nodeAttr: elementData.nodeAttr,
       nodeType: elementData.nodeType,
-      avoidable: elementData.avoidable,
     })
   } catch (error) {
     console.error('拖放元素失败:', error)

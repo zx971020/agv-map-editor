@@ -2,12 +2,14 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type {
   CanvasNode,
+  NodeData,
   CanvasPath,
   GridConfig,
   RulerConfig,
   CanvasViewport,
   ToolType,
 } from '@/types'
+import { createNode, importNodes, exportNodes } from '@/utils/nodeTransform'
 
 export const useCanvasStore = defineStore('canvas', () => {
   // 画布逻辑尺寸（实际地图尺寸，最大支持 100000x100000）
@@ -36,28 +38,35 @@ export const useCanvasStore = defineStore('canvas', () => {
     interval: 100,
   })
 
-  // 生成测试节点
+  // 生成测试节点（使用新的类型系统）
   const generateTestNodes = (): CanvasNode[] => {
-    const nodes: CanvasNode[] = []
     const types = [1, 2, 3, 4, 5, 6, 7, 12]
-    const labels = ['工位', '人工工位', '充电站', '机械手', '门', '停靠区', '路径点', '货架']
 
+    const testNodeData: NodeData[] = []
     for (let i = 0; i < 1000; i++) {
       const typeIndex = i % types.length
-      nodes.push({
-        id: `node_${i}`,
+      testNodeData.push({
+        node: i,
         type: types[typeIndex],
-        label: `${labels[typeIndex]}-${i}`,
         x: Math.random() * 50000,
         y: Math.random() * 50000,
-        width: 50,
-        height: 50,
-        rotation: 0,
+        leftStation: 0,
+        rightStation: 0,
         nodeAttr: 'COMMON',
         nodeType: typeIndex < 6 ? 'LOAD' : 'PATH',
+        navigationMode: 0,
+        avoidable: 1,
+        enable:true,
+        speed:100,
+        dir:20,
+        regionName:'',
+        stationName:'',
+        floor:1
       })
     }
-    return nodes
+
+    // 使用 importNodes 转换为运行时数据
+    return importNodes(testNodeData)
   }
 
   // 元素管理（笛卡尔坐标）
@@ -91,6 +100,13 @@ export const useCanvasStore = defineStore('canvas', () => {
   // 节点管理方法
   const addNode = (node: CanvasNode) => {
     nodes.value.push(node)
+  }
+
+  // 通过部分数据创建并添加节点
+  const addNodeFromData = (partialData: Pick<NodeData, 'type' | 'x' | 'y'> & Partial<NodeData>) => {
+    const node = createNode(partialData)
+    nodes.value.push(node)
+    return node
   }
 
   const updateNode = (id: string, updates: Partial<CanvasNode>) => {
@@ -203,6 +219,16 @@ export const useCanvasStore = defineStore('canvas', () => {
     }
   }
 
+  // 导入导出方法
+  const loadNodes = (data: NodeData[]) => {
+    nodes.value = importNodes(data)
+    selectedIds.value = []
+  }
+
+  const getExportData = (): NodeData[] => {
+    return exportNodes(nodes.value)
+  }
+
   return {
     // 状态
     canvasWidth,
@@ -224,6 +250,7 @@ export const useCanvasStore = defineStore('canvas', () => {
 
     // 方法
     addNode,
+    addNodeFromData,
     updateNode,
     deleteNode,
     deleteSelectedNodes,
@@ -240,5 +267,9 @@ export const useCanvasStore = defineStore('canvas', () => {
     resetViewport,
     setTool,
     snapToGridPoint,
+
+    // 导入导出
+    loadNodes,
+    getExportData,
   }
 })

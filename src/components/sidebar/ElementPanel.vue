@@ -25,11 +25,6 @@
         :key="element.type"
         class="group flex cursor-grab flex-col items-center gap-1.5 rounded-md border border-border bg-background p-2.5 transition-all hover:border-primary hover:bg-accent/50 hover:shadow-sm active:cursor-grabbing active:scale-95"
         draggable="true"
-        :data-type="element.type"
-        :data-label="element.name"
-        :data-node-attr="element.nodeAttr"
-        :data-node-type="element.nodeType"
-        :data-avoidable="element.avoidable"
         @dragstart="handleDragStart($event, element)"
       >
         <!-- 元素图标 - SVG -->

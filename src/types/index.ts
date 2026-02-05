@@ -24,11 +24,9 @@ export interface ElementListItem {
   icon: string
   name: string
   type: number
-  nodeAttr?: string
-  nodeType?: string
-  avoidable?: number
+  nodeAttr: string
+  nodeType: string
 }
-
 
 // 地图类型
 export type MapType = 'main' | 'sub'
@@ -36,39 +34,74 @@ export type MapType = 'main' | 'sub'
 // 地图项
 export interface MapItem {
   id: string
-  name: string
+  mapName: string
   type: MapType
-  width: number
-  height: number
+  mapWidth: number
+  mapLength: number
+  nodeList: CanvasNode[]
+  lineList: any[]
+  mainMapName?:string // 主地图名称
   subMaps?: MapItem[]
-  linkPoints?: number
 }
 
-// 画布元素（旧版，保留兼容）
-export interface CanvasElement {
-  id: string
-  type: ElementType
-  label: string
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
-// 画布节点元素（笛卡尔坐标系）
-export interface CanvasNode {
-  id: string
+/**
+ * 节点业务数据（用于导入导出）
+ * 不包含图形属性和前端运行时 ID
+ */
+export interface NodeData {
+  node: number | string // 元素点编号（业务主键，可修改）
   type: number // 元素类型编号
-  label: string
   x: number // 笛卡尔坐标 X
   y: number // 笛卡尔坐标 Y（向上为正）
-  width: number
-  height: number
-  rotation: number // 顺时针为正
-  nodeAttr?: string
-  nodeType?: string
-  avoidable?: number
-  data?: Record<string, any>
+  leftStation: number // 左工位
+  rightStation: number // 右工位
+  nodeAttr: string // 节点属性（如 "COMMON"）
+  nodeType: string // 节点类型（如 "LOAD", "PATH"）
+  navigationMode: number // 导航模式 
+  avoidable: 1 | 0 // 是否可避让
+  enable:boolean // 充电点使能
+  speed:number  // 速度
+  dir:number   // 姿态方向
+  floor: number|string  // 楼层
+  regionName: string // 区域名称
+  stationName: string // 站点名称
+}
+
+/**
+ * 节点图形属性（不导出，使用默认值补充）
+ * 根据 type 从配置中获取默认值
+ */
+export interface NodeGraphicProps {
+  width: number // 宽度
+  height: number // 高度
+  rotation: number // 旋转角度（顺时针为正）
+  label: string // 显示名称
+}
+
+
+export interface PathData {
+    type: 11
+    cpx: number
+    cpy: number
+    lineType: number
+    distance: number
+    startNode: number,
+    endNode: number,
+    laneDir: number,
+    mode: string
+    positiveCourse: number,
+    negativeCourse: number,
+    speed: number,
+    carBodyPositiveCourse:number
+    carBodyNegativeCourse:number
+}
+
+/**
+ * 画布节点运行时数据（前端使用）
+ * = 业务数据 + 图形属性 + 前端唯一 ID
+ */
+export interface CanvasNode extends NodeData, NodeGraphicProps {
+  id: string // 前端唯一标识（UUID，不导出）
 }
 
 // 画布路径元素
