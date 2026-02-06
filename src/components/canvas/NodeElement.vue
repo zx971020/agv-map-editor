@@ -2,6 +2,7 @@
   <v-group
     :config="groupConfig"
     @click="handleClick"
+    @dragmove="handleDragMove"
     @dragend="handleDragEnd"
     @contextmenu="handleContextMenu"
   >
@@ -140,6 +141,19 @@ const handleClick = (e: any) => {
   canvasStore.selectNode(props.node.id, isMultiSelect)
 }
 
+// 拖动中事件（实时更新路径线）
+const handleDragMove = (e: any) => {
+  const node = e.target
+  const newX = node.x()
+  const newY = node.y()
+
+  // 实时更新节点位置（不吸附网格）
+  canvasStore.updateNode(props.node.id, {
+    x: newX,
+    y: newY,
+  })
+}
+
 // 拖动结束事件
 const handleDragEnd = (e: any) => {
   const node = e.target
@@ -149,7 +163,7 @@ const handleDragEnd = (e: any) => {
   // 吸附到网格
   const snappedPos = canvasStore.snapToGridPoint(newX, newY)
 
-  // 更新节点位置
+  // 更新节点位置到吸附后的位置
   canvasStore.updateNode(props.node.id, {
     x: snappedPos.x,
     y: snappedPos.y,
