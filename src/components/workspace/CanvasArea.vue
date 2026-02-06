@@ -27,7 +27,8 @@
 
         <!-- 路径层 -->
         <v-layer ref="pathLayerRef">
-          <!-- 路径元素将在这里渲染 -->
+          <!-- 渲染路径线 -->
+          <PathLineElement v-for="path in canvasStore.pathLines" :key="path.id" :path="path" />
         </v-layer>
 
         <!-- 元素层 -->
@@ -87,6 +88,7 @@ import { ref, computed, onMounted, reactive } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
 import RulerLayer from '@/components/canvas/RulerLayer.vue'
 import NodeElement from '@/components/canvas/NodeElement.vue'
+import PathLineElement from '@/components/canvas/PathLineElement.vue'
 import type { ElementListItem } from '@/types'
 
 const canvasStore = useCanvasStore()
