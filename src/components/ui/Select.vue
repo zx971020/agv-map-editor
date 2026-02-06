@@ -1,5 +1,5 @@
 <template>
-  <SelectRoot v-model="modelValue" @update:model-value="$emit('update:modelValue', $event)">
+  <SelectRoot :model-value="modelValue" @update:model-value="handleUpdate">
     <SelectTrigger
       class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
     >
@@ -49,7 +49,11 @@ defineProps<{
   placeholder?: string
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'update:modelValue': [value: any]
 }>()
+
+const handleUpdate = (value: any) => {
+  emit('update:modelValue', value)
+}
 </script>
