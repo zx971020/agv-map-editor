@@ -49,7 +49,7 @@
     <!-- 元素属性面板 -->
     <Panel title="元素属性" :subtitle="selectedNode ? selectedNode.label : '未选择'">
       <template #actions>
-        <Button variant="ghost" size="xs" @click="clearSelection" :disabled="!selectedNode">
+        <Button variant="ghost" size="sm" @click="clearSelection" :disabled="!selectedNode">
           清除
         </Button>
       </template>
@@ -130,7 +130,7 @@
 import { computed } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
 import Panel from '@/components/common/Panel.vue'
-import Button from '@/components/ui/Button.vue'
+import { Button } from '@/components/ui/button'
 
 const canvasStore = useCanvasStore()
 
