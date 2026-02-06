@@ -136,8 +136,8 @@ const canvasStore = useCanvasStore()
 
 // 获取当前选中的节点（只支持单选）
 const selectedNode = computed(() => {
-  if (canvasStore.selectedIds.length === 1) {
-    return canvasStore.nodes.find(n => n.id === canvasStore.selectedIds[0])
+  if (canvasStore.selectedNodeIds.length === 1) {
+    return canvasStore.nodes.find(n => n.id === canvasStore.selectedNodeIds[0])
   }
   return null
 })
