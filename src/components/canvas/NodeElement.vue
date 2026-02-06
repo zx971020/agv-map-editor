@@ -72,7 +72,7 @@ const groupConfig = computed(() => ({
 
 // 是否选中
 const isSelected = computed(() => {
-  return canvasStore.selectedIds.includes(props.node.id)
+  return canvasStore.selectedNodeIds.includes(props.node.id)
 })
 
 // 根据元素类型获取图标文字
