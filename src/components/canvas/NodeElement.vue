@@ -1,5 +1,11 @@
 <template>
-  <v-group :config="groupConfig" @click="handleClick" @dragend="handleDragEnd">
+  <v-group
+    :config="groupConfig"
+    @click="handleClick"
+    @dragmove="handleDragMove"
+    @dragend="handleDragEnd"
+    @contextmenu="handleContextMenu"
+  >
     <!-- 背景圆形 -->
     <v-circle :config="circleConfig" />
 
@@ -12,11 +18,36 @@
     <!-- 选中状态指示器 -->
     <v-circle v-if="isSelected" :config="selectionConfig" />
   </v-group>
+
+  <!-- 右键菜单 -->
+  <ContextMenu :visible="contextMenuVisible" :position="contextMenuPosition" @close="closeContextMenu">
+    <ContextMenuItem @click="handleEdit">
+      <template #default>编辑节点</template>
+    </ContextMenuItem>
+    <ContextMenuItem @click="handleCreatePath">
+      <template #default>创建路径</template>
+    </ContextMenuItem>
+    <div class="my-1 h-px bg-border"></div>
+    <ContextMenuItem variant="danger" @click="handleDelete">
+      <template #default>删除节点</template>
+    </ContextMenuItem>
+  </ContextMenu>
+
+  <!-- 路径表单对话框 -->
+  <PathFormDialog
+    :open="pathDialogOpen"
+    :initial-start-node="node.node"
+    @update:open="pathDialogOpen = $event"
+    @success="handlePathCreated"
+  />
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
+import ContextMenu from '@/components/ui/ContextMenu.vue'
+import ContextMenuItem from '@/components/ui/ContextMenuItem.vue'
+import PathFormDialog from '@/components/dialogs/PathFormDialog.vue'
 import type { CanvasNode } from '@/types'
 
 const props = defineProps<{
@@ -24,6 +55,13 @@ const props = defineProps<{
 }>()
 
 const canvasStore = useCanvasStore()
+
+// 右键菜单状态
+const contextMenuVisible = ref(false)
+const contextMenuPosition = ref({ x: 0, y: 0 })
+
+// 路径对话框状态
+const pathDialogOpen = ref(false)
 
 // 组件配置（使用 computed 确保响应式更新）
 const groupConfig = computed(() => ({
@@ -35,7 +73,7 @@ const groupConfig = computed(() => ({
 
 // 是否选中
 const isSelected = computed(() => {
-  return canvasStore.selectedIds.includes(props.node.id)
+  return canvasStore.selectedNodeIds.includes(props.node.id)
 })
 
 // 根据元素类型获取图标文字
@@ -103,6 +141,19 @@ const handleClick = (e: any) => {
   canvasStore.selectNode(props.node.id, isMultiSelect)
 }
 
+// 拖动中事件（实时更新路径线）
+const handleDragMove = (e: any) => {
+  const node = e.target
+  const newX = node.x()
+  const newY = node.y()
+
+  // 实时更新节点位置（不吸附网格）
+  canvasStore.updateNode(props.node.id, {
+    x: newX,
+    y: newY,
+  })
+}
+
 // 拖动结束事件
 const handleDragEnd = (e: any) => {
   const node = e.target
@@ -112,10 +163,56 @@ const handleDragEnd = (e: any) => {
   // 吸附到网格
   const snappedPos = canvasStore.snapToGridPoint(newX, newY)
 
-  // 更新节点位置
+  // 更新节点位置到吸附后的位置
   canvasStore.updateNode(props.node.id, {
     x: snappedPos.x,
     y: snappedPos.y,
   })
+}
+
+// 右键菜单事件
+const handleContextMenu = (e: any) => {
+  e.evt.preventDefault()
+  
+  // 获取鼠标位置
+  const mouseX = e.evt.clientX
+  const mouseY = e.evt.clientY
+  
+  // 设置菜单位置
+  contextMenuPosition.value = { x: mouseX, y: mouseY }
+  contextMenuVisible.value = true
+  
+  // 选中当前节点（如果未选中）
+  if (!isSelected.value) {
+    canvasStore.selectNode(props.node.id, false)
+  }
+}
+
+// 关闭右键菜单
+const closeContextMenu = () => {
+  contextMenuVisible.value = false
+}
+
+// 编辑节点
+const handleEdit = () => {
+  console.log('编辑节点:', props.node.node)
+  // TODO: 打开节点编辑对话框
+}
+
+// 创建路径
+const handleCreatePath = () => {
+  pathDialogOpen.value = true
+}
+
+// 删除节点
+const handleDelete = () => {
+  if (confirm(`确定要删除节点 ${props.node.node} 吗？`)) {
+    canvasStore.deleteNode(props.node.id)
+  }
+}
+
+// 路径创建成功
+const handlePathCreated = () => {
+  console.log('路径创建成功')
 }
 </script>

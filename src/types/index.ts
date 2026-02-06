@@ -79,21 +79,43 @@ export interface NodeGraphicProps {
 }
 
 
+/**
+ * 路径线业务数据（用于导入导出）
+ * 不包含图形属性和前端运行时 ID
+ */
 export interface PathData {
-    type: 11
-    cpx: number
-    cpy: number
-    lineType: number
-    distance: number
-    startNode: number,
-    endNode: number,
-    laneDir: number,
-    mode: string
-    positiveCourse: number,
-    negativeCourse: number,
-    speed: number,
-    carBodyPositiveCourse:number
-    carBodyNegativeCourse:number
+  type: 11 // 固定值，标识为路径线
+  startNode: number // 起始节点编号
+  endNode: number // 结束节点编号
+  lineType: number // 路径类型：0=直线, 1=弧线
+  distance: number // 路径距离（自动计算，只读）
+  laneDir: number // 车道方向：0=单向, 1=双向
+  speed: number // 速度限制
+  positiveCourse: number // 正向航向角
+  negativeCourse: number // 反向航向角
+  carBodyPositiveCourse: number // 车体正向航向角
+  carBodyNegativeCourse: number // 车体反向航向角
+  cpx?: number // 控制点 X（仅弧线时存在）
+  cpy?: number // 控制点 Y（仅弧线时存在）
+}
+
+/**
+ * 路径线图形属性（不导出，使用默认值补充）
+ * 根据 lineType 和 laneDir 从配置中获取默认值
+ */
+export interface PathGraphicProps {
+  strokeColor: string // 线条颜色
+  strokeWidth: number // 线条粗细
+  showArrow: boolean // 是否显示箭头
+  dash?: number[] // 虚线样式（可选）
+}
+
+/**
+ * 画布路径线运行时数据（前端使用）
+ * = 业务数据 + 图形属性 + 前端唯一 ID
+ */
+export interface CanvasPathLine extends PathData, PathGraphicProps {
+  id: string // 前端唯一标识（UUID，不导出）
 }
 
 /**

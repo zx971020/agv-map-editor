@@ -4,12 +4,15 @@ import type {
   CanvasNode,
   NodeData,
   CanvasPath,
+  CanvasPathLine,
+  PathData,
   GridConfig,
   RulerConfig,
   CanvasViewport,
   ToolType,
 } from '@/types'
 import { createNode, importNodes, exportNodes } from '@/utils/nodeTransform'
+import { createPath, importPaths, exportPaths, calculateDistance } from '@/utils/pathTransform'
 
 export const useCanvasStore = defineStore('canvas', () => {
   // 画布逻辑尺寸（实际地图尺寸，最大支持 100000x100000）
@@ -71,8 +74,14 @@ export const useCanvasStore = defineStore('canvas', () => {
 
   // 元素管理（笛卡尔坐标）
   const nodes = ref<CanvasNode[]>(generateTestNodes())
-  const paths = ref<CanvasPath[]>([])
-  const selectedIds = ref<string[]>([])
+  const pathLines = ref<CanvasPathLine[]>([]) // 路径线列表
+  const paths = ref<CanvasPath[]>([]) // 旧的路径数据（保留兼容）
+  
+  // 选中状态管理
+  type SelectionType = 'node' | 'path' | null
+  const selectedType = ref<SelectionType>(null)
+  const selectedNodeIds = ref<string[]>([]) // 节点选中（支持多选）
+  const selectedPathId = ref<string | null>(null) // 路径线选中（单选）
 
   // 工具状态
   const currentTool = ref<ToolType>('select')
@@ -113,35 +122,127 @@ export const useCanvasStore = defineStore('canvas', () => {
     const index = nodes.value.findIndex(n => n.id === id)
     if (index !== -1) {
       nodes.value[index] = { ...nodes.value[index], ...updates }
+      
+      // 如果更新了位置，自动更新相关路径的距离
+      if (updates.x !== undefined || updates.y !== undefined) {
+        updatePathDistances(id)
+      }
     }
   }
 
   const deleteNode = (id: string) => {
     nodes.value = nodes.value.filter(n => n.id !== id)
-    selectedIds.value = selectedIds.value.filter(sid => sid !== id)
+    selectedNodeIds.value = selectedNodeIds.value.filter(sid => sid !== id)
   }
 
   const deleteSelectedNodes = () => {
-    nodes.value = nodes.value.filter(n => !selectedIds.value.includes(n.id))
-    selectedIds.value = []
+    nodes.value = nodes.value.filter(n => !selectedNodeIds.value.includes(n.id))
+    selectedNodeIds.value = []
   }
 
   // 选中管理方法
   const selectNode = (id: string, multi = false) => {
+    selectedType.value = 'node'
+    selectedPathId.value = null // 清除路径选中
+    
     if (multi) {
-      const index = selectedIds.value.indexOf(id)
+      const index = selectedNodeIds.value.indexOf(id)
       if (index !== -1) {
-        selectedIds.value.splice(index, 1)
+        selectedNodeIds.value.splice(index, 1)
       } else {
-        selectedIds.value.push(id)
+        selectedNodeIds.value.push(id)
       }
     } else {
-      selectedIds.value = [id]
+      selectedNodeIds.value = [id]
     }
   }
 
   const clearSelection = () => {
-    selectedIds.value = []
+    selectedType.value = null
+    selectedNodeIds.value = []
+    selectedPathId.value = null
+  }
+
+  // 选中路径线（单选）
+  const selectPath = (id: string) => {
+    selectedType.value = 'path'
+    selectedNodeIds.value = [] // 清除节点选中
+    selectedPathId.value = id
+  }
+
+  // 获取当前选中的对象
+  const getSelectedObject = computed(() => {
+    if (selectedType.value === 'node' && selectedNodeIds.value.length > 0) {
+      return {
+        type: 'node' as const,
+        nodes: nodes.value.filter(n => selectedNodeIds.value.includes(n.id)),
+      }
+    }
+    if (selectedType.value === 'path' && selectedPathId.value) {
+      return {
+        type: 'path' as const,
+        path: pathLines.value.find(p => p.id === selectedPathId.value),
+      }
+    }
+    return null
+  })
+
+  // 路径线管理方法
+  const addPathLine = (path: CanvasPathLine) => {
+    pathLines.value.push(path)
+  }
+
+  // 通过表单数据创建路径线
+  const addPathFromData = (pathData: Omit<PathData, 'type' | 'distance'>) => {
+    // 查找起始和结束节点
+    const startNode = nodes.value.find(n => n.node === pathData.startNode)
+    const endNode = nodes.value.find(n => n.node === pathData.endNode)
+
+    if (!startNode || !endNode) {
+      throw new Error('起始节点或结束节点不存在')
+    }
+
+    // 创建路径线
+    const path = createPath(pathData, startNode.x, startNode.y, endNode.x, endNode.y)
+    pathLines.value.push(path)
+    return path
+  }
+
+  // 更新路径线
+  const updatePathLine = (id: string, updates: Partial<CanvasPathLine>) => {
+    const index = pathLines.value.findIndex(p => p.id === id)
+    if (index !== -1) {
+      pathLines.value[index] = { ...pathLines.value[index], ...updates }
+    }
+  }
+
+  // 删除路径线
+  const deletePathLine = (id: string) => {
+    pathLines.value = pathLines.value.filter(p => p.id !== id)
+    if (selectedPathId.value === id) {
+      clearSelection()
+    }
+  }
+
+  // 节点移动时更新相关路径线的距离
+  const updatePathDistances = (nodeId: string) => {
+    const node = nodes.value.find(n => n.id === nodeId)
+    if (!node) return
+
+    // 查找所有连接到该节点的路径线
+    const relatedPaths = pathLines.value.filter(
+      p => p.startNode === node.node || p.endNode === node.node
+    )
+
+    relatedPaths.forEach(path => {
+      const startNode = nodes.value.find(n => n.node === path.startNode)
+      const endNode = nodes.value.find(n => n.node === path.endNode)
+
+      if (startNode && endNode) {
+        const newDistance = calculateDistance(startNode.x, startNode.y, endNode.x, endNode.y)
+        updatePathLine(path.id, { distance: newDistance })
+      }
+    })
   }
 
   // 路径管理方法
@@ -222,7 +323,7 @@ export const useCanvasStore = defineStore('canvas', () => {
   // 导入导出方法
   const loadNodes = (data: NodeData[]) => {
     nodes.value = importNodes(data)
-    selectedIds.value = []
+    clearSelection()
   }
 
   const getExportData = (): NodeData[] => {
@@ -238,7 +339,10 @@ export const useCanvasStore = defineStore('canvas', () => {
     ruler,
     nodes,
     paths,
-    selectedIds,
+    pathLines,
+    selectedType,
+    selectedNodeIds,
+    selectedPathId,
     currentTool,
     isDragging,
     isDrawingPath,
@@ -247,20 +351,35 @@ export const useCanvasStore = defineStore('canvas', () => {
     // 计算属性
     gridBaseSize,
     rulerInterval,
+    getSelectedObject,
 
-    // 方法
+    // 节点方法
     addNode,
     addNodeFromData,
     updateNode,
     deleteNode,
     deleteSelectedNodes,
+    
+    // 选中方法
     selectNode,
+    selectPath,
     clearSelection,
+    
+    // 路径线方法
+    addPathLine,
+    addPathFromData,
+    updatePathLine,
+    deletePathLine,
+    updatePathDistances,
+    
+    // 旧路径方法（保留兼容）
     addPath,
     startPath,
     addPathPoint,
     finishPath,
     cancelPath,
+    
+    // 视口方法
     setViewport,
     zoomIn,
     zoomOut,

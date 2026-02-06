@@ -96,58 +96,97 @@
     <!-- 右侧操作按钮组 -->
     <div class="flex items-center gap-2">
       <Button variant="ghost" size="sm">
-        <template #icon>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
-            />
-          </svg>
-        </template>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-4 h-4"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+          />
+        </svg>
         撤销
       </Button>
       <Button variant="ghost" size="sm">
-        <template #icon>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="m15 15 6-6m0 0-6-6m6 6H9a6 6 0 0 0 0 12h3"
-            />
-          </svg>
-        </template>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-4 h-4"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="m15 15 6-6m0 0-6-6m6 6H9a6 6 0 0 0 0 12h3"
+          />
+        </svg>
         重做
+      </Button>
+
+      <div class="h-6 w-px bg-border"></div>
+
+      <Button variant="default" size="sm" @click="openPathDialog">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-4 h-4"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 4.5v15m7.5-7.5h-15"
+          />
+        </svg>
+        创建路径
       </Button>
 
       <div class="h-6 w-px bg-border"></div>
 
       <Button variant="ghost" size="sm">保存</Button>
       <Button variant="outline" size="sm">导出</Button>
-      <Button variant="danger" size="sm">删除</Button>
+      <Button variant="destructive" size="sm">删除</Button>
     </div>
+
+    <!-- 路径表单对话框 -->
+    <PathFormDialog
+      :open="isPathDialogOpen"
+      @update:open="isPathDialogOpen = $event"
+      @success="handlePathCreated"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, h } from 'vue'
 import IconButton from '@/components/ui/IconButton.vue'
-import Button from '@/components/ui/Button.vue'
+import { Button } from '@/components/ui/button'
+import PathFormDialog from '@/components/dialogs/PathFormDialog.vue'
 import { useCanvasStore } from '@/stores/canvasStore'
 
 const canvasStore = useCanvasStore()
+
+// 路径对话框状态
+const isPathDialogOpen = ref(false)
+
+// 打开路径对话框
+const openPathDialog = () => {
+  isPathDialogOpen.value = true
+}
+
+// 路径创建成功回调
+const handlePathCreated = () => {
+  console.log('路径创建成功')
+}
 
 // 工具图标组件
 const SelectIcon = () =>

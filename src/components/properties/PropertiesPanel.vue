@@ -49,7 +49,7 @@
     <!-- 元素属性面板 -->
     <Panel title="元素属性" :subtitle="selectedNode ? selectedNode.label : '未选择'">
       <template #actions>
-        <Button variant="ghost" size="xs" @click="clearSelection" :disabled="!selectedNode">
+        <Button variant="ghost" size="sm" @click="clearSelection" :disabled="!selectedNode">
           清除
         </Button>
       </template>
@@ -130,14 +130,14 @@
 import { computed } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
 import Panel from '@/components/common/Panel.vue'
-import Button from '@/components/ui/Button.vue'
+import { Button } from '@/components/ui/button'
 
 const canvasStore = useCanvasStore()
 
 // 获取当前选中的节点（只支持单选）
 const selectedNode = computed(() => {
-  if (canvasStore.selectedIds.length === 1) {
-    return canvasStore.nodes.find(n => n.id === canvasStore.selectedIds[0])
+  if (canvasStore.selectedNodeIds.length === 1) {
+    return canvasStore.nodes.find(n => n.id === canvasStore.selectedNodeIds[0])
   }
   return null
 })
