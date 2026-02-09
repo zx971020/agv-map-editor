@@ -21,14 +21,12 @@
         @mousedown="handleMouseDown"
         @mousemove="handleMouseMove"
         @mouseup="handleMouseUp"
+        @click="handleClick"
       >
-        <!-- 标尺层 -->
-        <RulerLayer />
-
         <!-- 路径层 -->
         <v-layer ref="pathLayerRef">
-          <!-- 渲染路径线 -->
-          <PathLineElement v-for="path in canvasStore.pathLines" :key="path.id" :path="path" />
+          <!-- 渲染可见区域内的路径线（视口剔除优化） -->
+          <PathLineElement v-for="path in visiblePathLines" :key="path.id" :path="path" />
         </v-layer>
 
         <!-- 元素层 -->
@@ -71,13 +69,12 @@
       </div>
 
       <!-- 画布信息显示 -->
-      <div class="absolute px-3 py-2 text-xs text-white rounded-lg bottom-4 left-4 bg-black/60">
+      <div class="absolute px-3 py-2 text-xs text-white rounded-lg bottom-4 right-4 bg-black/60">
         <div>缩放: {{ Math.round(canvasStore.viewport.scale * 10000) / 100 }}%</div>
         <div>
           视口: ({{ Math.round(canvasStore.viewport.x) }}, {{ Math.round(canvasStore.viewport.y) }})
         </div>
         <div>鼠标: ({{ Math.round(mousePosition.x) }}, {{ Math.round(mousePosition.y) }})</div>
-        <div>可见元素: {{ visibleNodes.length }} / {{ canvasStore.nodes.length }}</div>
       </div>
     </div>
   </div>
@@ -86,7 +83,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
-import RulerLayer from '@/components/canvas/RulerLayer.vue'
+import { useCanvasInteraction } from '@/composables/useCanvasInteraction'
 import NodeElement from '@/components/canvas/NodeElement.vue'
 import PathLineElement from '@/components/canvas/PathLineElement.vue'
 import type { ElementListItem } from '@/types'
@@ -104,8 +101,19 @@ const helperLayerRef = ref()
 const containerWidth = ref(800)
 const containerHeight = ref(600)
 
-// 计算可见区域内的节点（视口剔除优化）
-const visibleNodes = computed(() => {
+// 使用画布交互 composable
+const {
+  mousePosition,
+  handleWheel,
+  handleMouseDown,
+  handleMouseMove,
+  handleMouseUp,
+  handleClick,
+  screenToCanvas,
+} = useCanvasInteraction(stageRef, canvasStore)
+
+// 计算可见区域边界（复用逻辑）
+const viewportBounds = computed(() => {
   const viewport = canvasStore.viewport
   const scale = viewport.scale
 
@@ -120,13 +128,43 @@ const visibleNodes = computed(() => {
   // 添加边距，避免边缘元素突然消失
   const margin = 100 / scale
 
+  return {
+    left: viewLeft - margin,
+    right: viewRight + margin,
+    top: viewTop + margin,
+    bottom: viewBottom - margin,
+  }
+})
+
+// 计算可见区域内的节点（视口剔除优化）
+const visibleNodes = computed(() => {
+  const bounds = viewportBounds.value
+
   return canvasStore.nodes.filter(node => {
     return (
-      node.x + node.width >= viewLeft - margin &&
-      node.x <= viewRight + margin &&
-      node.y + node.height >= viewBottom - margin &&
-      node.y <= viewTop + margin
+      node.x + node.width >= bounds.left &&
+      node.x <= bounds.right &&
+      node.y + node.height >= bounds.bottom &&
+      node.y <= bounds.top
     )
+  })
+})
+
+// 计算可见区域内的路径线（视口剔除优化）
+// 基于 visibleNodes 来过滤，只有 startNode 或 endNode 在可见节点中时才渲染
+// 只有当 startNode 和 endNode 都不存在时不渲染
+const visiblePathLines = computed(() => {
+  // 创建可见节点的 node 编号集合，用于快速查找
+  const visibleNodeIds = new Set(visibleNodes.value.map(n => n.node))
+
+  return canvasStore.pathLines.filter(path => {
+    // 检查起始节点和结束节点是否在可见节点中
+    const startVisible = visibleNodeIds.has(path.startNode)
+    const endVisible = visibleNodeIds.has(path.endNode)
+
+    // 只要起始节点或结束节点有一个在可见节点中，就渲染该路径
+    // 只有当两个节点都不可见时，才不渲染
+    return startVisible || endVisible
   })
 })
 
@@ -182,13 +220,6 @@ const stageConfig = computed(() => ({
   container: undefined,
 }))
 
-// 拖动状态
-const isPanning = ref(false)
-const lastPointerPosition = ref({ x: 0, y: 0 })
-
-// 鼠标位置（笛卡尔坐标）
-const mousePosition = ref({ x: 0, y: 0 })
-
 // 初始化容器尺寸
 onMounted(() => {
   if (containerRef.value) {
@@ -201,77 +232,6 @@ onMounted(() => {
     resizeObserver.observe(containerRef.value)
   }
 })
-
-// 鼠标滚轮缩放
-const handleWheel = (e: any) => {
-  e.evt.preventDefault()
-
-  const stage = stageRef.value.getStage()
-  const oldScale = canvasStore.viewport.scale
-  const pointer = stage.getPointerPosition()
-
-  // 计算鼠标在画布中的笛卡尔坐标（缩放前）
-  const mouseX = (pointer.x - canvasStore.viewport.x) / oldScale
-  const mouseY = -(pointer.y - canvasStore.viewport.y) / oldScale
-
-  // 计算新的缩放比例
-  const scaleBy = 1.1
-  const newScale =
-    e.evt.deltaY < 0 ? Math.min(oldScale * scaleBy, 10) : Math.max(oldScale / scaleBy, 0.001)
-
-  // 计算新的视口位置（保持鼠标指向的画布位置不变）
-  const newViewportX = pointer.x - mouseX * newScale
-  const newViewportY = pointer.y + mouseY * newScale
-
-  canvasStore.setViewport({
-    scale: newScale,
-    x: newViewportX,
-    y: newViewportY,
-  })
-}
-
-// 鼠标按下（开始拖动画布）
-const handleMouseDown = (e: any) => {
-  // 鼠标左键、中键都可以拖动画布
-  if (e.evt.button === 0 || e.evt.button === 1) {
-    isPanning.value = true
-    const stage = stageRef.value.getStage()
-    lastPointerPosition.value = stage.getPointerPosition()
-  }
-}
-
-// 鼠标移动（拖动画布 + 更新鼠标位置）
-const handleMouseMove = (e: any) => {
-  const stage = stageRef.value.getStage()
-  const pointer = stage.getPointerPosition()
-  if (!pointer) return
-
-  // 更新鼠标位置（转换为笛卡尔坐标）
-  // 屏幕坐标 → 笛卡尔坐标：x 不变，y 需要翻转
-  const scale = canvasStore.viewport.scale
-  const canvasX = (pointer.x - canvasStore.viewport.x) / scale
-  const canvasY = -(pointer.y - canvasStore.viewport.y) / scale
-  mousePosition.value = { x: canvasX, y: canvasY }
-
-  // 拖动画布
-  if (!isPanning.value) return
-
-  const dx = pointer.x - lastPointerPosition.value.x
-  const dy = pointer.y - lastPointerPosition.value.y
-
-  // Stage x/y 直接跟随鼠标移动
-  canvasStore.setViewport({
-    x: canvasStore.viewport.x + dx,
-    y: canvasStore.viewport.y + dy,
-  })
-
-  lastPointerPosition.value = pointer
-}
-
-// 鼠标释放（结束拖动）
-const handleMouseUp = () => {
-  isPanning.value = false
-}
 
 // 处理拖拽悬停
 const handleDragOver = (e: DragEvent) => {
@@ -305,10 +265,7 @@ const handleDrop = (e: DragEvent) => {
     const mouseY = e.clientY - canvasRect.top
 
     // 转换为画布坐标（笛卡尔坐标系）
-    // 注意：Y 轴需要翻转，因为 Stage 的 scaleY 是负数
-    const scale = canvasStore.viewport.scale
-    const canvasX = (mouseX - canvasStore.viewport.x) / scale
-    const canvasY = -(mouseY - canvasStore.viewport.y) / scale
+    const { x: canvasX, y: canvasY } = screenToCanvas(mouseX, mouseY)
 
     // 吸附到网格
     const snappedPos = canvasStore.snapToGridPoint(canvasX, canvasY)

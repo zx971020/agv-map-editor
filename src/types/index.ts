@@ -40,7 +40,7 @@ export interface MapItem {
   mapLength: number
   nodeList: CanvasNode[]
   lineList: any[]
-  mainMapName?:string // 主地图名称
+  mainMapName?: string // 主地图名称
   subMaps?: MapItem[]
 }
 
@@ -54,15 +54,15 @@ export interface NodeData {
   x: number // 笛卡尔坐标 X
   y: number // 笛卡尔坐标 Y（向上为正）
   leftStation: number // 左工位
-  rightStation: number // 右工位
+  rightStation: string // 右工位
   nodeAttr: string // 节点属性（如 "COMMON"）
   nodeType: string // 节点类型（如 "LOAD", "PATH"）
-  navigationMode: number // 导航模式 
+  navigationMode: number // 导航模式
   avoidable: 1 | 0 // 是否可避让
-  enable:boolean // 充电点使能
-  speed:number  // 速度
-  dir:number   // 姿态方向
-  floor: number|string  // 楼层
+  enable: boolean // 充电点使能
+  speed: number // 速度
+  dir: number // 姿态方向
+  floor: number | string // 楼层
   regionName: string // 区域名称
   stationName: string // 站点名称
 }
@@ -77,7 +77,6 @@ export interface NodeGraphicProps {
   rotation: number // 旋转角度（顺时针为正）
   label: string // 显示名称
 }
-
 
 /**
  * 路径线业务数据（用于导入导出）
@@ -146,13 +145,6 @@ export interface GridConfig {
   size: number // 基础网格大小
   snapToGrid: boolean
   snapThreshold: number
-}
-
-// 标尺配置
-export interface RulerConfig {
-  show: boolean
-  size: number // 标尺宽度/高度（像素）
-  interval: number // 刻度间隔
 }
 
 // 画布视图配置（用于无极缩放和平移）

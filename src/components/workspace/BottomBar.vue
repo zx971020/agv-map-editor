@@ -1,33 +1,15 @@
 <template>
-  <footer class="toolbar-modern flex h-12 items-center justify-between px-4">
+  <footer class="flex items-center justify-between h-12 px-4 toolbar-modern">
     <!-- 左侧快捷键提示 -->
     <div class="text-xs text-muted-foreground">
-      <span class="hidden lg:inline">Del: 删除 · Ctrl+D: 复制 · Shift: 吸附 · 方向键: 移动</span>
-    </div>
-
-    <!-- 右侧缩放控制 -->
-    <div class="flex items-center gap-3">
-      <span class="text-xs text-muted-foreground">缩放</span>
-      <input
-        v-model.number="zoomValue"
-        type="range"
-        min="50"
-        max="200"
-        class="zoom-range h-1.5 w-24 cursor-pointer appearance-none rounded-full outline-none"
-      />
-      <span class="min-w-[3rem] text-right text-xs font-medium text-foreground"
-        >{{ zoomValue }}%</span
-      >
+      <span class="hidden lg:inline">Del: 删除 · Ctrl+D: 复制 · Shift: 吸附 · 方向键: 移动 · Ctrl+鼠标左键: 移动画布</span>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { CANVAS_CONFIG } from '@/config'
 
-// 缩放值
-const zoomValue = ref(CANVAS_CONFIG.defaultZoom)
+
 </script>
 
 <style scoped>

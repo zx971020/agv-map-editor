@@ -2,29 +2,29 @@
     "lineDirection": [
         {
             "label": "单向",
-            "value": "0"
+            "value": 0
         },
         {
             "label": "双向",
-            "value": "1"
+            "value": 1
         }
     ],
     "nodeDirection": [
         {
             "label": "上",
-            "value": "0"
+            "value": 0
         },
         {
             "label": "下",
-            "value": "1"
+            "value": 1
         },
         {
             "label": "左",
-            "value": "2"
+            "value": 2
         },
         {
             "label": "右",
-            "value": "3"
+            "value": 3
         }
     ],
     "navigationMode":[
@@ -44,24 +44,14 @@
     "lineType": [
         {
             "label": "直线",
-            "value": "0"
+            "value": 0
         },
         {
             "label": "弧线",
-            "value": "1"
+            "value": 1
         }
     ],
-    "navMode": [
-        {
-            "label": "磁导航",
-            "value": "0"
-        },
-        {
-            "label": "激光导航",
-            "value": "1"
-        }
-    ],
-    "defaultNodeAttr": [
+    "nodeAttr": [
         {
             "label": "正常点",
             "value": "COMMON"
@@ -70,36 +60,6 @@
             "label": "光通信点",
             "value": "OPTICAL"
         }  
-    ],
-    "anchorageNodeAttr": [
-        {
-            "label": "上料点",
-            "value": "LOAD"
-        }
-    ],
-    "chargeNodeAttr": [
-        {
-            "label": "上料点",
-            "value": "LOAD"
-        },
-        {
-            "label": "充电点",
-            "value": "CHARGING"
-        }
-    ],
-    "doorNodeAttr": [
-        {
-            "label": "旋转点",
-            "value": "SPIN"
-        },
-        {
-            "label": "联动点",
-            "value": "LINK"
-        },
-        {
-            "label": "普通路径点",
-            "value": "PATH"
-        }
     ],
     "nodeType": [
         {

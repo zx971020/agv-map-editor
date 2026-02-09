@@ -23,9 +23,11 @@
       <div
         v-for="element in elements"
         :key="element.type"
-        class="group flex cursor-grab flex-col items-center gap-1.5 rounded-md border border-border bg-background p-2.5 transition-all hover:border-primary hover:bg-accent/50 hover:shadow-sm active:cursor-grabbing active:scale-95"
+        class="group flex cursor-pointer flex-col items-center gap-1.5 rounded-md border border-border bg-background p-2.5 transition-all hover:border-primary hover:bg-accent/50 hover:shadow-sm active:scale-95"
         draggable="true"
         @dragstart="handleDragStart($event, element)"
+        @click="handleClick(element)"
+        :title="`点击在视窗中心添加${element.name}，或拖拽到画布指定位置`"
       >
         <!-- 元素图标 - SVG -->
         <div
@@ -49,6 +51,9 @@ import Panel from '@/components/common/Panel.vue'
 import IconButton from '@/components/ui/IconButton.vue'
 import elementListData from '@/assets/element-list.json'
 import type { ElementListItem } from '@/types'
+import { useCanvasStore } from '@/stores/canvasStore'
+
+const canvasStore = useCanvasStore()
 
 // 元素列表
 const elements = ref<ElementListItem[]>(elementListData)
@@ -235,12 +240,52 @@ const getIconComponent = (iconName: string) => {
 }
 
 // 处理拖拽开始
-const handleDragStart = (event: DragEvent, element: ElementListItem) => { 
+const handleDragStart = (event: DragEvent, element: ElementListItem) => {
   if (!event.dataTransfer) return
 
   // 设置拖拽数据
   event.dataTransfer.effectAllowed = 'copy'
   event.dataTransfer.setData('application/json', JSON.stringify(element))
   event.dataTransfer.setData('text/plain', element.name)
+}
+
+/**
+ * 处理点击事件 - 在视窗中心添加元素
+ */
+const handleClick = (element: ElementListItem) => {
+  // 获取画布容器尺寸（假设是全屏或从 DOM 获取）
+  // 这里使用一个合理的默认值，实际应该从 CanvasArea 获取
+  const containerWidth = window.innerWidth - 400 // 减去侧边栏宽度
+  const containerHeight = window.innerHeight - 60 // 减去顶部栏高度
+
+  // 计算屏幕中心点
+  const screenCenterX = containerWidth / 2
+  const screenCenterY = containerHeight / 2
+
+  // 将屏幕坐标转换为画布坐标（笛卡尔坐标系）
+  const viewport = canvasStore.viewport
+  const scale = viewport.scale
+
+  // 屏幕坐标 → 画布坐标
+  const canvasX = (screenCenterX - viewport.x) / scale
+  const canvasY = -(screenCenterY - viewport.y) / scale
+
+  // 吸附到网格
+  const snappedPos = canvasStore.snapToGridPoint(canvasX, canvasY)
+
+  // 创建节点
+  const newNode = canvasStore.addNodeFromData({
+    type: element.type,
+    x: Math.round(snappedPos.x),
+    y: Math.round(snappedPos.y),
+    nodeAttr: element.nodeAttr,
+    nodeType: element.nodeType,
+  })
+
+  // 选中新创建的节点
+  canvasStore.clearSelection()
+  canvasStore.selectNode(newNode.id, false)
+
+  console.log(`在视窗中心添加了 ${element.name}，坐标: (${newNode.x}, ${newNode.y})`)
 }
 </script>

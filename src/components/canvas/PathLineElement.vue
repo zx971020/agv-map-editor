@@ -104,19 +104,17 @@ const arrowAngle = computed(() => {
 const lineConfig = computed(() => {
   if (!startNode.value || !endNode.value) return null
 
+  const scale = canvasStore.viewport.scale
+  const baseStrokeWidth = 4 // 加粗基础宽度从 2 改为 4
+
   return {
-    points: [
-      startNode.value.x,
-      startNode.value.y,
-      endNode.value.x,
-      endNode.value.y,
-    ],
+    points: [startNode.value.x, startNode.value.y, endNode.value.x, endNode.value.y],
     stroke: isHovered.value ? '#1e40af' : props.path.strokeColor,
-    strokeWidth: isHovered.value ? props.path.strokeWidth + 1 : props.path.strokeWidth,
+    strokeWidth: (isHovered.value ? baseStrokeWidth + 1 : baseStrokeWidth) / scale, // 抵消缩放
     dash: props.path.dash,
     lineCap: 'round',
     lineJoin: 'round',
-    hitStrokeWidth: 10, // 增加点击区域
+    hitStrokeWidth: 10 / scale, // 增加点击区域，抵消缩放
     listening: true,
   }
 })
@@ -124,6 +122,9 @@ const lineConfig = computed(() => {
 // 弧线配置（贝塞尔曲线）
 const curveConfig = computed(() => {
   if (!startNode.value || !endNode.value) return null
+
+  const scale = canvasStore.viewport.scale
+  const baseStrokeWidth = 4 // 加粗基础宽度从 2 改为 4
 
   return {
     points: [
@@ -135,13 +136,13 @@ const curveConfig = computed(() => {
       endNode.value.y,
     ],
     stroke: isHovered.value ? '#1e40af' : props.path.strokeColor,
-    strokeWidth: isHovered.value ? props.path.strokeWidth + 1 : props.path.strokeWidth,
+    strokeWidth: (isHovered.value ? baseStrokeWidth + 1 : baseStrokeWidth) / scale, // 抵消缩放
     dash: props.path.dash,
     tension: 0.5, // 曲线张力
     bezier: true, // 启用贝塞尔曲线
     lineCap: 'round',
     lineJoin: 'round',
-    hitStrokeWidth: 10,
+    hitStrokeWidth: 10 / scale, // 抵消缩放
     listening: true,
   }
 })
@@ -150,13 +151,16 @@ const curveConfig = computed(() => {
 const arrowConfig = computed(() => {
   if (!midPoint.value) return null
 
+  const scale = canvasStore.viewport.scale
+  const arrowSize = 10 / scale // 箭头大小抵消缩放
+
   return {
     x: midPoint.value.x,
     y: midPoint.value.y,
-    points: [0, 0, -10, -5, -10, 5], // 箭头形状
+    points: [0, 0, -arrowSize, -arrowSize / 2, -arrowSize, arrowSize / 2], // 箭头形状
     fill: props.path.strokeColor,
     stroke: props.path.strokeColor,
-    strokeWidth: 1,
+    strokeWidth: 1 / scale, // 抵消缩放
     closed: true,
     rotation: (arrowAngle.value * 180) / Math.PI, // 转换为角度
     listening: false,
@@ -166,6 +170,9 @@ const arrowConfig = computed(() => {
 // 选中状态配置
 const selectionConfig = computed(() => {
   if (!startNode.value || !endNode.value) return null
+
+  const scale = canvasStore.viewport.scale
+  const baseStrokeWidth = 4 // 与主线条保持一致
 
   const baseConfig =
     props.path.lineType === 0
@@ -188,8 +195,8 @@ const selectionConfig = computed(() => {
   return {
     ...baseConfig,
     stroke: '#3b82f6',
-    strokeWidth: props.path.strokeWidth + 3,
-    dash: [10, 5],
+    strokeWidth: (baseStrokeWidth + 3) / scale, // 抵消缩放
+    dash: [10 / scale, 5 / scale], // 虚线也要抵消缩放
     opacity: 0.5,
     listening: false,
   }

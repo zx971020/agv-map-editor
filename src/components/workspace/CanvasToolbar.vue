@@ -1,11 +1,11 @@
 <template>
-  <div class="toolbar-modern flex h-12 items-center justify-between px-4">
+  <div class="flex items-center justify-between h-12 px-4 toolbar-modern">
     <!-- 左侧工具组 -->
     <div class="flex items-center gap-1">
       <button
         v-for="tool in tools"
         :key="tool.id"
-        class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all"
+        class="flex items-center gap-2 px-3 py-2 text-sm font-medium transition-all rounded-lg"
         :class="
           tool.id === activeTool
             ? 'bg-primary text-primary-foreground shadow-sm'
@@ -14,7 +14,7 @@
         :title="tool.tooltip"
         @click="activeTool = tool.id"
       >
-        <component :is="tool.icon" class="h-4 w-4" />
+        <component :is="tool.icon" class="w-4 h-4" />
         <span>{{ tool.label }}</span>
       </button>
     </div>
@@ -69,28 +69,6 @@
           />
         </svg>
       </IconButton>
-
-      <IconButton
-        variant="ghost"
-        size="sm"
-        :title="canvasStore.ruler.show ? '隐藏标尺 (R)' : '显示标尺 (R)'"
-        :class="{ 'bg-accent text-accent-foreground': canvasStore.ruler.show }"
-        @click="toggleRuler"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125Z"
-          />
-        </svg>
-      </IconButton>
     </div>
 
     <!-- 右侧操作按钮组 -->
@@ -130,9 +108,32 @@
         重做
       </Button>
 
-      <div class="h-6 w-px bg-border"></div>
+      <div class="w-px h-6 bg-border"></div>
 
       <Button variant="default" size="sm" @click="openPathDialog">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-4 h-4"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        创建路径
+      </Button>
+
+      <div class="w-px h-6 bg-border"></div>
+
+      <Button variant="ghost" size="sm">保存</Button>
+      <Button variant="outline" size="sm">导出</Button>
+      <Button variant="destructive" size="sm">删除</Button>
+
+      <div class="w-px h-6 bg-border"></div>
+
+      <!-- 性能测试按钮 -->
+      <Button variant="secondary" size="sm" @click="generateTestLines">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -144,25 +145,16 @@
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
-            d="M12 4.5v15m7.5-7.5h-15"
+            d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
           />
         </svg>
-        创建路径
+        生成500条线
       </Button>
-
-      <div class="h-6 w-px bg-border"></div>
-
-      <Button variant="ghost" size="sm">保存</Button>
-      <Button variant="outline" size="sm">导出</Button>
-      <Button variant="destructive" size="sm">删除</Button>
+      <Button variant="ghost" size="sm" @click="clearTestLines">清空连接线</Button>
     </div>
 
     <!-- 路径表单对话框 -->
-    <PathFormDialog
-      :open="isPathDialogOpen"
-      @update:open="isPathDialogOpen = $event"
-      @success="handlePathCreated"
-    />
+    <PathFormDialog v-model:open="isPathDialogOpen" @success="handlePathCreated" />
   </div>
 </template>
 
@@ -186,6 +178,25 @@ const openPathDialog = () => {
 // 路径创建成功回调
 const handlePathCreated = () => {
   console.log('路径创建成功')
+}
+
+// 生成测试连接线
+const generateTestLines = () => {
+  console.log('开始生成500根测试连接线...')
+  const startTime = performance.now()
+
+  canvasStore.loadTestPathLines(500)
+
+  const endTime = performance.now()
+  console.log(`生成完成，耗时: ${(endTime - startTime).toFixed(2)}ms`)
+  console.log(`当前连接线数量: ${canvasStore.pathLines.length}`)
+}
+
+// 清空测试连接线
+const clearTestLines = () => {
+  console.log('清空所有连接线...')
+  canvasStore.clearAllPathLines()
+  console.log('清空完成')
 }
 
 // 工具图标组件
@@ -264,10 +275,5 @@ const toggleGrid = () => {
 // 切换网格吸附
 const toggleSnapToGrid = () => {
   canvasStore.grid.snapToGrid = !canvasStore.grid.snapToGrid
-}
-
-// 切换标尺显示
-const toggleRuler = () => {
-  canvasStore.ruler.show = !canvasStore.ruler.show
 }
 </script>

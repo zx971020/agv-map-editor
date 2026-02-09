@@ -1,17 +1,19 @@
 <template>
+  <!-- TODO:对话框打开动画效果过于卡顿，需要优化 -->
   <Dialog :open="open" @update:open="handleOpenChange">
     <DialogContent class="sm:max-w-[600px]">
       <DialogHeader>
         <DialogTitle>{{ isEdit ? '编辑路径' : '创建路径' }}</DialogTitle>
       </DialogHeader>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4 py-4">
+      <form @submit.prevent="handleSubmit" class="py-4 space-y-4">
         <!-- 起始节点 -->
         <div class="space-y-2">
           <Label for="startNode" :class="['after:content-[\'_*\'] after:text-red-500']">
             起始节点
           </Label>
           <NodeSelect
+            v-if="open"
             id="startNode"
             v-model="formData.startNode"
             placeholder="选择起始节点"
@@ -26,6 +28,7 @@
             结束节点
           </Label>
           <NodeSelect
+            v-if="open"
             id="endNode"
             v-model="formData.endNode"
             placeholder="选择结束节点"
@@ -41,11 +44,7 @@
               <SelectValue placeholder="选择路径类型" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem
-                v-for="item in lineTypeOptions"
-                :key="item.value"
-                :value="parseInt(item.value)"
-              >
+              <SelectItem v-for="item in lineTypeOptions" :key="item.value" :value="item.value">
                 {{ item.label }}
               </SelectItem>
             </SelectContent>
@@ -94,7 +93,7 @@
               <SelectItem
                 v-for="item in lineDirectionOptions"
                 :key="item.value"
-                :value="parseInt(item.value)"
+                :value="item.value"
               >
                 {{ item.label }}
               </SelectItem>
@@ -116,12 +115,12 @@
         </div>
 
         <!-- 航向角字段（可折叠） -->
-        <details class="space-y-4 rounded-lg border p-4">
-          <summary class="cursor-pointer font-medium text-sm text-slate-700 dark:text-slate-300">
+        <details class="p-4 space-y-4 border rounded-lg">
+          <summary class="text-sm font-medium cursor-pointer text-slate-700 dark:text-slate-300">
             高级选项（航向角）
           </summary>
 
-          <div class="space-y-4 pt-2">
+          <div class="pt-2 space-y-4">
             <div class="space-y-2">
               <Label for="positiveCourse">正向航向角</Label>
               <Input
@@ -170,9 +169,7 @@
 
         <!-- 表单按钮 -->
         <DialogFooter>
-          <Button type="button" variant="outline" @click="handleCancel">
-            取消
-          </Button>
+          <Button type="button" variant="outline" @click="handleCancel"> 取消 </Button>
           <Button type="submit">
             {{ isEdit ? '保存' : '创建' }}
           </Button>
@@ -251,10 +248,11 @@ const isEdit = ref(false)
 // 监听对话框打开状态，初始化表单
 watch(
   () => props.open,
-  (newOpen) => {
+  newOpen => {
     if (newOpen) {
+      // 重置表单
       resetForm()
-      
+
       // 如果有初始起始节点，设置它
       if (props.initialStartNode !== undefined && props.initialStartNode !== null) {
         formData.startNode = props.initialStartNode

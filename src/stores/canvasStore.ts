@@ -7,12 +7,11 @@ import type {
   CanvasPathLine,
   PathData,
   GridConfig,
-  RulerConfig,
   CanvasViewport,
   ToolType,
 } from '@/types'
 import { createNode, importNodes, exportNodes } from '@/utils/nodeTransform'
-import { createPath, importPaths, exportPaths, calculateDistance } from '@/utils/pathTransform'
+import { createPath, importPaths, calculateDistance } from '@/utils/pathTransform'
 
 export const useCanvasStore = defineStore('canvas', () => {
   // 画布逻辑尺寸（实际地图尺寸，最大支持 100000x100000）
@@ -30,15 +29,8 @@ export const useCanvasStore = defineStore('canvas', () => {
   const grid = ref<GridConfig>({
     show: true,
     size: 20,
-    snapToGrid: true,
+    snapToGrid: false,
     snapThreshold: 5,
-  })
-
-  // 标尺配置
-  const ruler = ref<RulerConfig>({
-    show: false,
-    size: 30,
-    interval: 100,
   })
 
   // 生成测试节点（使用新的类型系统）
@@ -54,17 +46,17 @@ export const useCanvasStore = defineStore('canvas', () => {
         x: Math.random() * 50000,
         y: Math.random() * 50000,
         leftStation: 0,
-        rightStation: 0,
+        rightStation: '',
         nodeAttr: 'COMMON',
         nodeType: typeIndex < 6 ? 'LOAD' : 'PATH',
         navigationMode: 0,
         avoidable: 1,
-        enable:true,
-        speed:100,
-        dir:20,
-        regionName:'',
-        stationName:'',
-        floor:1
+        enable: true,
+        speed: 100,
+        dir: 0,
+        regionName: '',
+        stationName: '',
+        floor: 1,
       })
     }
 
@@ -72,11 +64,65 @@ export const useCanvasStore = defineStore('canvas', () => {
     return importNodes(testNodeData)
   }
 
+  // 生成测试连接线（性能测试用）
+  const generateTestPathLines = (count: number = 500): CanvasPathLine[] => {
+    const testPathData: PathData[] = []
+    const nodeCount = nodes.value.length
+
+    if (nodeCount < 2) {
+      console.warn('节点数量不足，无法生成连接线')
+      return []
+    }
+
+    for (let i = 0; i < count; i++) {
+      // 随机选择两个不同的节点
+      const startIndex = Math.floor(Math.random() * nodeCount)
+      let endIndex = Math.floor(Math.random() * nodeCount)
+
+      // 确保起始和结束节点不同
+      while (endIndex === startIndex) {
+        endIndex = Math.floor(Math.random() * nodeCount)
+      }
+
+      const startNode = nodes.value[startIndex]
+      const endNode = nodes.value[endIndex]
+
+      // 计算距离
+      const distance = calculateDistance(startNode.x, startNode.y, endNode.x, endNode.y)
+
+      // 随机生成路径属性
+      const lineType = Math.random() > 0.8 ? 1 : 0 // 80% 直线，20% 弧线
+      const laneDir = Math.random() > 0.5 ? 1 : 0 // 50% 双向，50% 单向
+
+      testPathData.push({
+        type: 11,
+        startNode: startNode.node as number,
+        endNode: endNode.node as number,
+        lineType,
+        distance,
+        laneDir,
+        speed: 100 + Math.floor(Math.random() * 100), // 100-200 速度
+        positiveCourse: Math.floor(Math.random() * 360),
+        negativeCourse: Math.floor(Math.random() * 360),
+        carBodyPositiveCourse: Math.floor(Math.random() * 360),
+        carBodyNegativeCourse: Math.floor(Math.random() * 360),
+        // 如果是弧线，添加控制点
+        ...(lineType === 1 && {
+          cpx: (startNode.x + endNode.x) / 2 + (Math.random() - 0.5) * 1000,
+          cpy: (startNode.y + endNode.y) / 2 + (Math.random() - 0.5) * 1000,
+        }),
+      })
+    }
+
+    // 使用 importPaths 转换为运行时数据
+    return importPaths(testPathData)
+  }
+
   // 元素管理（笛卡尔坐标）
   const nodes = ref<CanvasNode[]>(generateTestNodes())
   const pathLines = ref<CanvasPathLine[]>([]) // 路径线列表
   const paths = ref<CanvasPath[]>([]) // 旧的路径数据（保留兼容）
-  
+
   // 选中状态管理
   type SelectionType = 'node' | 'path' | null
   const selectedType = ref<SelectionType>(null)
@@ -97,15 +143,6 @@ export const useCanvasStore = defineStore('canvas', () => {
     return 10
   })
 
-  // 计算属性：根据缩放比例获取合适的标尺刻度间隔
-  const rulerInterval = computed(() => {
-    const scale = viewport.value.scale
-    if (scale < 0.5) return 200
-    if (scale < 1) return 100
-    if (scale < 2) return 50
-    return 25
-  })
-
   // 节点管理方法
   const addNode = (node: CanvasNode) => {
     nodes.value.push(node)
@@ -113,7 +150,7 @@ export const useCanvasStore = defineStore('canvas', () => {
 
   // 通过部分数据创建并添加节点
   const addNodeFromData = (partialData: Pick<NodeData, 'type' | 'x' | 'y'> & Partial<NodeData>) => {
-    const node = createNode(partialData)
+    const node = createNode(partialData, nodes.value) // 传入现有节点列表
     nodes.value.push(node)
     return node
   }
@@ -122,7 +159,7 @@ export const useCanvasStore = defineStore('canvas', () => {
     const index = nodes.value.findIndex(n => n.id === id)
     if (index !== -1) {
       nodes.value[index] = { ...nodes.value[index], ...updates }
-      
+
       // 如果更新了位置，自动更新相关路径的距离
       if (updates.x !== undefined || updates.y !== undefined) {
         updatePathDistances(id)
@@ -131,11 +168,32 @@ export const useCanvasStore = defineStore('canvas', () => {
   }
 
   const deleteNode = (id: string) => {
+    // 找到要删除的节点
+    const node = nodes.value.find(n => n.id === id)
+    if (!node) return
+
+    // 删除所有连接到该节点的路径线
+    pathLines.value = pathLines.value.filter(
+      p => p.startNode !== node.node && p.endNode !== node.node
+    )
+
+    // 删除节点
     nodes.value = nodes.value.filter(n => n.id !== id)
     selectedNodeIds.value = selectedNodeIds.value.filter(sid => sid !== id)
   }
 
   const deleteSelectedNodes = () => {
+    // 获取要删除的节点编号列表
+    const nodesToDelete = nodes.value
+      .filter(n => selectedNodeIds.value.includes(n.id))
+      .map(n => n.node)
+
+    // 删除所有连接到这些节点的路径线
+    pathLines.value = pathLines.value.filter(
+      p => !nodesToDelete.includes(p.startNode) && !nodesToDelete.includes(p.endNode)
+    )
+
+    // 删除节点
     nodes.value = nodes.value.filter(n => !selectedNodeIds.value.includes(n.id))
     selectedNodeIds.value = []
   }
@@ -144,7 +202,7 @@ export const useCanvasStore = defineStore('canvas', () => {
   const selectNode = (id: string, multi = false) => {
     selectedType.value = 'node'
     selectedPathId.value = null // 清除路径选中
-    
+
     if (multi) {
       const index = selectedNodeIds.value.indexOf(id)
       if (index !== -1) {
@@ -330,13 +388,32 @@ export const useCanvasStore = defineStore('canvas', () => {
     return exportNodes(nodes.value)
   }
 
+  // 加载测试连接线（性能测试）
+  const loadTestPathLines = (count: number = 500) => {
+    console.time('生成测试连接线')
+    const testPaths = generateTestPathLines(count)
+    console.timeEnd('生成测试连接线')
+
+    console.time('加载测试连接线')
+    pathLines.value = testPaths
+    console.timeEnd('加载测试连接线')
+
+    console.log(`已生成 ${testPaths.length} 根连接线`)
+    return testPaths
+  }
+
+  // 清空所有连接线
+  const clearAllPathLines = () => {
+    pathLines.value = []
+    clearSelection()
+  }
+
   return {
     // 状态
     canvasWidth,
     canvasHeight,
     viewport,
     grid,
-    ruler,
     nodes,
     paths,
     pathLines,
@@ -350,7 +427,6 @@ export const useCanvasStore = defineStore('canvas', () => {
 
     // 计算属性
     gridBaseSize,
-    rulerInterval,
     getSelectedObject,
 
     // 节点方法
@@ -359,26 +435,26 @@ export const useCanvasStore = defineStore('canvas', () => {
     updateNode,
     deleteNode,
     deleteSelectedNodes,
-    
+
     // 选中方法
     selectNode,
     selectPath,
     clearSelection,
-    
+
     // 路径线方法
     addPathLine,
     addPathFromData,
     updatePathLine,
     deletePathLine,
     updatePathDistances,
-    
+
     // 旧路径方法（保留兼容）
     addPath,
     startPath,
     addPathPoint,
     finishPath,
     cancelPath,
-    
+
     // 视口方法
     setViewport,
     zoomIn,
@@ -390,5 +466,9 @@ export const useCanvasStore = defineStore('canvas', () => {
     // 导入导出
     loadNodes,
     getExportData,
+
+    // 测试方法
+    loadTestPathLines,
+    clearAllPathLines,
   }
 })

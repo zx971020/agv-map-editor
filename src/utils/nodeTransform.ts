@@ -76,34 +76,59 @@ export function exportNode(node: CanvasNode): NodeData {
 }
 
 /**
+ * 生成唯一的节点编号
+ * 查找当前所有节点中最大的编号，然后加1
+ *
+ * @param existingNodes 现有节点列表
+ * @returns 新的唯一节点编号
+ */
+export function generateUniqueNodeNumber(existingNodes: CanvasNode[]): number {
+  if (existingNodes.length === 0) {
+    return 1 // 如果没有节点，从1开始
+  }
+
+  // 找到最大的节点编号
+  const maxNodeNumber = Math.max(
+    ...existingNodes.map(n => {
+      const nodeNum = typeof n.node === 'number' ? n.node : parseInt(String(n.node), 10)
+      return isNaN(nodeNum) ? 0 : nodeNum
+    })
+  )
+
+  return maxNodeNumber + 1
+}
+
+/**
  * 创建新节点（用于画布上添加新元素）
  *
  * @param partialData 部分业务数据（至少包含 type, x, y）
+ * @param existingNodes 现有节点列表（用于生成唯一编号）
  * @returns 完整的运行时节点数据
  */
 export function createNode(
-  partialData: Pick<NodeData, 'type' | 'x' | 'y'> & Partial<NodeData>
+  partialData: Pick<NodeData, 'type' | 'x' | 'y'> & Partial<NodeData>,
+  existingNodes: CanvasNode[] = []
 ): CanvasNode {
   const graphicDefaults = getNodeGraphicDefaults(partialData.type)
 
   // 业务数据默认值
   const nodeDataDefaults: NodeData = {
-    node: Date.now(), // 临时编号，用户可修改
+    node: generateUniqueNodeNumber(existingNodes), // 自动生成唯一编号
     type: partialData.type,
     x: partialData.x,
     y: partialData.y,
     leftStation: 0,
-    rightStation: 0,
+    rightStation: '',
     nodeAttr: 'COMMON',
     nodeType: 'PATH',
     navigationMode: 0,
     avoidable: 1,
     enable: false, // 充电点使能
-    speed:1000,  // 速度
-    dir:100,   // 姿态方向
-    floor: 1,  // 楼层
+    speed: 1000, // 速度
+    dir: 0, // 姿态方向
+    floor: 1, // 楼层
     regionName: '', // 区域名称
-    stationName: '' // 站点名称
+    stationName: '', // 站点名称
   }
 
   return {

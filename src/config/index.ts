@@ -1,4 +1,3 @@
-
 // 画布配置
 export const CANVAS_CONFIG = {
   // 默认画布尺寸
@@ -16,15 +15,10 @@ export const CANVAS_CONFIG = {
   defaultGridSize: 20,
   showGrid: true,
 
-  // 参考线配置
-  showGuides: true,
-  guideColor: '#0066cc',
-
   // 吸附配置
   snapToGrid: false,
   snapThreshold: 5,
 }
-
 
 // 地图配置
 export const MAP_CONFIG = {
