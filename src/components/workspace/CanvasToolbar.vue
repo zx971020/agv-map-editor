@@ -21,9 +21,10 @@
 
     <!-- 中间工具组 -->
     <div class="flex items-center gap-1">
-      <IconButton
-        variant="ghost"
-        size="sm"
+      <el-button
+        text
+        circle
+        size="small"
         :title="canvasStore.grid.show ? '隐藏网格 (G)' : '显示网格 (G)'"
         :class="{ 'bg-accent text-accent-foreground': canvasStore.grid.show }"
         @click="toggleGrid"
@@ -41,11 +42,12 @@
             d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"
           />
         </svg>
-      </IconButton>
+      </el-button>
 
-      <IconButton
-        variant="ghost"
-        size="sm"
+      <el-button
+        text
+        circle
+        size="small"
         :title="canvasStore.grid.snapToGrid ? '关闭网格吸附 (Shift+G)' : '开启网格吸附 (Shift+G)'"
         :class="{ 'bg-accent text-accent-foreground': canvasStore.grid.snapToGrid }"
         @click="toggleSnapToGrid"
@@ -68,12 +70,12 @@
             d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
           />
         </svg>
-      </IconButton>
+      </el-button>
     </div>
 
     <!-- 右侧操作按钮组 -->
     <div class="flex items-center gap-2">
-      <Button variant="ghost" size="sm">
+      <el-button text size="small">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -89,8 +91,8 @@
           />
         </svg>
         撤销
-      </Button>
-      <Button variant="ghost" size="sm">
+      </el-button>
+      <el-button text size="small">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -106,11 +108,11 @@
           />
         </svg>
         重做
-      </Button>
+      </el-button>
 
       <div class="w-px h-6 bg-border"></div>
 
-      <Button variant="default" size="sm" @click="openPathDialog">
+      <el-button type="primary" size="small" @click="openPathDialog">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -122,18 +124,18 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
         创建路径
-      </Button>
+      </el-button>
 
       <div class="w-px h-6 bg-border"></div>
 
-      <Button variant="ghost" size="sm">保存</Button>
-      <Button variant="outline" size="sm">导出</Button>
-      <Button variant="destructive" size="sm">删除</Button>
+      <el-button text size="small">保存</el-button>
+      <el-button size="small">导出</el-button>
+      <el-button type="danger" size="small">删除</el-button>
 
       <div class="w-px h-6 bg-border"></div>
 
       <!-- 性能测试按钮 -->
-      <Button variant="secondary" size="sm" @click="generateTestLines">
+      <el-button type="info" size="small" @click="generateTestLines">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -149,8 +151,8 @@
           />
         </svg>
         生成500条线
-      </Button>
-      <Button variant="ghost" size="sm" @click="clearTestLines">清空连接线</Button>
+      </el-button>
+      <el-button text size="small" @click="clearTestLines">清空连接线</el-button>
     </div>
 
     <!-- 路径表单对话框 -->
@@ -160,8 +162,6 @@
 
 <script setup lang="ts">
 import { ref, h } from 'vue'
-import IconButton from '@/components/ui/IconButton.vue'
-import { Button } from '@/components/ui/button'
 import PathFormDialog from '@/components/dialogs/PathFormDialog.vue'
 import { useCanvasStore } from '@/stores/canvasStore'
 

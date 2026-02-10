@@ -2,10 +2,9 @@
   <div class="relative">
     <!-- 输入框 -->
     <div class="relative">
-      <Input
+      <el-input
         ref="inputRef"
         v-model="searchQuery"
-        type="text"
         :placeholder="placeholder || '输入节点编号搜索...'"
         :disabled="disabled"
         @focus="handleFocus"
@@ -14,26 +13,8 @@
         @keydown.escape="showDropdown = false"
         @keydown.down.prevent="handleArrowDown"
         @keydown.up.prevent="handleArrowUp"
-        class="pr-8"
+        clearable
       />
-      <!-- 清除按钮 -->
-      <button
-        v-if="selectedValue !== null"
-        type="button"
-        @click="handleClear"
-        class="absolute -translate-y-1/2 right-2 top-1/2 text-muted-foreground hover:text-foreground"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-4 h-4"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-        </svg>
-      </button>
     </div>
 
     <!-- 下拉列表 -->
@@ -81,7 +62,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
-import { Input } from '@/components/ui/input'
 import type { CanvasNode } from '@/types'
 
 const props = defineProps<{

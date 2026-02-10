@@ -121,6 +121,7 @@ export function useCanvasInteraction(
    */
   const handleMouseUp = () => {
     isPanning.value = false
+    hasMoved.value = false
   }
 
   /**

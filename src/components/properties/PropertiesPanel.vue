@@ -42,9 +42,9 @@
       :subtitle="selectedNode ? `节点 ${selectedNode.node}` : '未选择'"
     >
       <template #actions>
-        <Button variant="ghost" size="sm" @click="clearSelection" :disabled="!selectedNode">
+        <el-button text size="small" @click="clearSelection" :disabled="!selectedNode">
           清除
-        </Button>
+        </el-button>
       </template>
 
       <div v-if="selectedNode" class="grid grid-cols-2 gap-2 property-grid">
@@ -230,9 +230,9 @@
       "
     >
       <template #actions>
-        <Button variant="ghost" size="sm" @click="clearSelection" :disabled="!selectedPath">
+        <el-button text size="small" @click="clearSelection" :disabled="!selectedPath">
           清除
-        </Button>
+        </el-button>
       </template>
 
       <div v-if="selectedPath" class="grid grid-cols-2 gap-2 property-grid">
@@ -376,7 +376,6 @@
 import { computed } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
 import Panel from '@/components/common/Panel.vue'
-import { Button } from '@/components/ui/button'
 import dictData from '@/assets/dict.json'
 
 const canvasStore = useCanvasStore()

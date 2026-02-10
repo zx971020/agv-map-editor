@@ -1,7 +1,7 @@
 <template>
   <Panel title="地图列表">
     <template #actions>
-      <IconButton variant="ghost" size="sm" title="新增地图">
+      <el-button text circle size="small" title="新增地图">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -11,7 +11,7 @@
         >
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
-      </IconButton>
+      </el-button>
     </template>
 
     <!-- 地图列表 - 现代化设计 -->
@@ -48,10 +48,11 @@
           </div>
 
           <!-- 折叠按钮 -->
-          <IconButton
+          <el-button
             v-if="map.subMaps && map.subMaps.length > 0"
-            variant="ghost"
-            size="sm"
+            text
+            circle
+            size="small"
             :title="expandedMaps.has(map.id) ? '折叠' : '展开'"
             @click.stop="toggleSubMaps(map.id)"
           >
@@ -66,7 +67,7 @@
             >
               <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
             </svg>
-          </IconButton>
+          </el-button>
         </div>
 
         <!-- 子地图列表 -->
@@ -107,7 +108,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import Panel from '@/components/common/Panel.vue'
-import IconButton from '@/components/ui/IconButton.vue'
 import { MOCK_MAPS } from '@/config/mockData'
 import type { MapItem } from '@/types'
 

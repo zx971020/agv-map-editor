@@ -29,14 +29,14 @@
 
     <!-- 右侧：操作按钮 + 深色模式切换 -->
     <div class="flex items-center gap-2">
-      <Button variant="ghost" size="sm">
+      <el-button text size="small">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="w-4 h-4"
+          class="w-4 h-4 mr-1"
         >
           <path
             stroke-linecap="round"
@@ -50,16 +50,16 @@
           />
         </svg>
         预览
-      </Button>
+      </el-button>
 
-      <Button variant="default" size="sm">
+      <el-button type="primary" size="small">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="w-4 h-4"
+          class="w-4 h-4 mr-1"
         >
           <path
             stroke-linecap="round"
@@ -68,14 +68,16 @@
           />
         </svg>
         发布
-      </Button>
+      </el-button>
 
       <div class="h-6 w-px bg-border"></div>
 
       <!-- 深色模式切换 -->
-      <IconButton
-        :variant="isDark ? 'secondary' : 'ghost'"
-        size="sm"
+      <el-button
+        :type="isDark ? 'info' : ''"
+        text
+        circle
+        size="small"
         :title="isDark ? '切换到浅色模式' : '切换到深色模式'"
         @click="toggleDarkMode"
       >
@@ -86,6 +88,7 @@
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
+          class="w-4 h-4"
         >
           <path
             stroke-linecap="round"
@@ -100,6 +103,7 @@
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
+          class="w-4 h-4"
         >
           <path
             stroke-linecap="round"
@@ -107,14 +111,12 @@
             d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"
           />
         </svg>
-      </IconButton>
+      </el-button>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import IconButton from '@/components/ui/IconButton.vue'
 import { useDarkMode } from '@/composables/useDarkMode'
 
 const { isDark, toggleDarkMode } = useDarkMode()

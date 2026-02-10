@@ -31,22 +31,25 @@
   </v-group>
 
   <!-- 右键菜单 -->
-  <ContextMenu
-    :visible="contextMenuVisible"
-    :position="contextMenuPosition"
-    @close="closeContextMenu"
-  >
-    <ContextMenuItem @click="handleEdit">
-      <template #default>编辑节点</template>
-    </ContextMenuItem>
-    <ContextMenuItem @click="handleCreatePath">
-      <template #default>创建路径</template>
-    </ContextMenuItem>
-    <div class="h-px my-1 bg-border"></div>
-    <ContextMenuItem variant="danger" @click="handleDelete">
-      <template #default>删除节点</template>
-    </ContextMenuItem>
-  </ContextMenu>
+  <Teleport to="body">
+    <div
+      v-if="contextMenuVisible"
+      class="fixed z-[2000]"
+      :style="{ top: `${contextMenuPosition.y}px`, left: `${contextMenuPosition.x}px` }"
+    >
+      <ul class="el-dropdown-menu">
+        <li class="el-dropdown-menu__item" @click="handleEdit">编辑节点</li>
+        <li class="el-dropdown-menu__item" @click="handleCreatePath">创建路径</li>
+        <li
+          class="el-dropdown-menu__item el-dropdown-menu__item--divided"
+          style="color: var(--el-color-danger)"
+          @click="handleDelete"
+        >
+          删除节点
+        </li>
+      </ul>
+    </div>
+  </Teleport>
 
   <!-- 路径表单对话框 -->
   <PathFormDialog
@@ -58,10 +61,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onBeforeUnmount, nextTick } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
-import ContextMenu from '@/components/ui/ContextMenu.vue'
-import ContextMenuItem from '@/components/ui/ContextMenuItem.vue'
 import PathFormDialog from '@/components/dialogs/PathFormDialog.vue'
 import type { CanvasNode } from '@/types'
 
@@ -297,6 +298,37 @@ const handleMouseLeave = () => {
 const closeContextMenu = () => {
   contextMenuVisible.value = false
 }
+
+// 右键菜单点击外部和 Escape 键处理
+const onDocumentClick = (e: MouseEvent) => {
+  const target = e.target as HTMLElement
+  if (!target.closest('.el-dropdown-menu')) {
+    closeContextMenu()
+  }
+}
+
+const onDocumentKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') {
+    closeContextMenu()
+  }
+}
+
+watch(contextMenuVisible, visible => {
+  if (visible) {
+    nextTick(() => {
+      document.addEventListener('click', onDocumentClick)
+      document.addEventListener('keydown', onDocumentKeydown)
+    })
+  } else {
+    document.removeEventListener('click', onDocumentClick)
+    document.removeEventListener('keydown', onDocumentKeydown)
+  }
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onDocumentClick)
+  document.removeEventListener('keydown', onDocumentKeydown)
+})
 
 // 编辑节点
 const handleEdit = () => {

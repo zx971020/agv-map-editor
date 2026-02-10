@@ -1,204 +1,180 @@
 <template>
   <!-- TODO:对话框打开动画效果过于卡顿，需要优化 -->
-  <Dialog :open="open" @update:open="handleOpenChange">
-    <DialogContent class="sm:max-w-[600px]">
-      <DialogHeader>
-        <DialogTitle>{{ isEdit ? '编辑路径' : '创建路径' }}</DialogTitle>
-      </DialogHeader>
+  <el-dialog
+    :model-value="open"
+    @update:model-value="handleOpenChange"
+    :title="isEdit ? '编辑路径' : '创建路径'"
+    width="600px"
+    :close-on-click-modal="false"
+    append-to-body
+  >
+    <form id="pathForm" @submit.prevent="handleSubmit" class="py-4 space-y-4">
+      <!-- 起始节点 -->
+      <div class="space-y-2">
+        <label for="startNode" class="text-sm font-medium after:content-['_*'] after:text-red-500">
+          起始节点
+        </label>
+        <NodeSelect
+          v-if="open"
+          id="startNode"
+          v-model="formData.startNode"
+          placeholder="选择起始节点"
+          :disabled="!!initialStartNode"
+        />
+        <p v-if="errors.startNode" class="text-sm text-red-500">{{ errors.startNode }}</p>
+      </div>
 
-      <form @submit.prevent="handleSubmit" class="py-4 space-y-4">
-        <!-- 起始节点 -->
-        <div class="space-y-2">
-          <Label for="startNode" :class="['after:content-[\'_*\'] after:text-red-500']">
-            起始节点
-          </Label>
-          <NodeSelect
-            v-if="open"
-            id="startNode"
-            v-model="formData.startNode"
-            placeholder="选择起始节点"
-            :disabled="!!initialStartNode"
+      <!-- 结束节点 -->
+      <div class="space-y-2">
+        <label for="endNode" class="text-sm font-medium after:content-['_*'] after:text-red-500">
+          结束节点
+        </label>
+        <NodeSelect
+          v-if="open"
+          id="endNode"
+          v-model="formData.endNode"
+          placeholder="选择结束节点"
+        />
+        <p v-if="errors.endNode" class="text-sm text-red-500">{{ errors.endNode }}</p>
+      </div>
+
+      <!-- 路径类型 -->
+      <div class="space-y-2">
+        <label for="lineType" class="text-sm font-medium">路径类型</label>
+        <el-select v-model="formData.lineType" placeholder="选择路径类型" class="w-full">
+          <el-option
+            v-for="item in lineTypeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
           />
-          <p v-if="errors.startNode" class="text-sm text-red-500">{{ errors.startNode }}</p>
-        </div>
+        </el-select>
+      </div>
 
-        <!-- 结束节点 -->
+      <!-- 控制点（仅弧线时显示） -->
+      <div v-if="formData.lineType === 1" class="space-y-4">
         <div class="space-y-2">
-          <Label for="endNode" :class="['after:content-[\'_*\'] after:text-red-500']">
-            结束节点
-          </Label>
-          <NodeSelect
-            v-if="open"
-            id="endNode"
-            v-model="formData.endNode"
-            placeholder="选择结束节点"
-          />
-          <p v-if="errors.endNode" class="text-sm text-red-500">{{ errors.endNode }}</p>
-        </div>
-
-        <!-- 路径类型 -->
-        <div class="space-y-2">
-          <Label for="lineType">路径类型</Label>
-          <Select v-model="formData.lineType">
-            <SelectTrigger>
-              <SelectValue placeholder="选择路径类型" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem v-for="item in lineTypeOptions" :key="item.value" :value="item.value">
-                {{ item.label }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <!-- 控制点（仅弧线时显示） -->
-        <div v-if="formData.lineType === 1" class="space-y-4">
-          <div class="space-y-2">
-            <Label for="cpx" :class="['after:content-[\'_*\'] after:text-red-500']">
-              控制点 X
-            </Label>
-            <Input
-              id="cpx"
-              v-model="formData.cpx"
-              type="number"
-              step="0.01"
-              placeholder="输入控制点 X 坐标"
-            />
-            <p v-if="errors.cpx" class="text-sm text-red-500">{{ errors.cpx }}</p>
-          </div>
-
-          <div class="space-y-2">
-            <Label for="cpy" :class="['after:content-[\'_*\'] after:text-red-500']">
-              控制点 Y
-            </Label>
-            <Input
-              id="cpy"
-              v-model="formData.cpy"
-              type="number"
-              step="0.01"
-              placeholder="输入控制点 Y 坐标"
-            />
-            <p v-if="errors.cpy" class="text-sm text-red-500">{{ errors.cpy }}</p>
-          </div>
-        </div>
-
-        <!-- 车道方向 -->
-        <div class="space-y-2">
-          <Label for="laneDir">车道方向</Label>
-          <Select v-model="formData.laneDir">
-            <SelectTrigger>
-              <SelectValue placeholder="选择车道方向" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem
-                v-for="item in lineDirectionOptions"
-                :key="item.value"
-                :value="item.value"
-              >
-                {{ item.label }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <!-- 速度 -->
-        <div class="space-y-2">
-          <Label for="speed">速度</Label>
-          <Input
-            id="speed"
-            v-model="formData.speed"
+          <label for="cpx" class="text-sm font-medium after:content-['_*'] after:text-red-500">
+            控制点 X
+          </label>
+          <el-input
+            id="cpx"
+            v-model="formData.cpx"
             type="number"
-            step="0.1"
-            min="0"
-            placeholder="输入速度限制"
+            step="0.01"
+            placeholder="输入控制点 X 坐标"
           />
+          <p v-if="errors.cpx" class="text-sm text-red-500">{{ errors.cpx }}</p>
         </div>
 
-        <!-- 航向角字段（可折叠） -->
-        <details class="p-4 space-y-4 border rounded-lg">
-          <summary class="text-sm font-medium cursor-pointer text-slate-700 dark:text-slate-300">
-            高级选项（航向角）
-          </summary>
+        <div class="space-y-2">
+          <label for="cpy" class="text-sm font-medium after:content-['_*'] after:text-red-500">
+            控制点 Y
+          </label>
+          <el-input
+            id="cpy"
+            v-model="formData.cpy"
+            type="number"
+            step="0.01"
+            placeholder="输入控制点 Y 坐标"
+          />
+          <p v-if="errors.cpy" class="text-sm text-red-500">{{ errors.cpy }}</p>
+        </div>
+      </div>
 
-          <div class="pt-2 space-y-4">
-            <div class="space-y-2">
-              <Label for="positiveCourse">正向航向角</Label>
-              <Input
-                id="positiveCourse"
-                v-model="formData.positiveCourse"
-                type="number"
-                step="0.1"
-                placeholder="输入正向航向角"
-              />
-            </div>
+      <!-- 车道方向 -->
+      <div class="space-y-2">
+        <label for="laneDir" class="text-sm font-medium">车道方向</label>
+        <el-select v-model="formData.laneDir" placeholder="选择车道方向" class="w-full">
+          <el-option
+            v-for="item in lineDirectionOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </div>
 
-            <div class="space-y-2">
-              <Label for="negativeCourse">反向航向角</Label>
-              <Input
-                id="negativeCourse"
-                v-model="formData.negativeCourse"
-                type="number"
-                step="0.1"
-                placeholder="输入反向航向角"
-              />
-            </div>
+      <!-- 速度 -->
+      <div class="space-y-2">
+        <label for="speed" class="text-sm font-medium">速度</label>
+        <el-input
+          id="speed"
+          v-model="formData.speed"
+          type="number"
+          step="0.1"
+          min="0"
+          placeholder="输入速度限制"
+        />
+      </div>
 
-            <div class="space-y-2">
-              <Label for="carBodyPositiveCourse">车体正向航向角</Label>
-              <Input
-                id="carBodyPositiveCourse"
-                v-model="formData.carBodyPositiveCourse"
-                type="number"
-                step="0.1"
-                placeholder="输入车体正向航向角"
-              />
-            </div>
+      <!-- 航向角字段（可折叠） -->
+      <details class="p-4 space-y-4 border rounded-lg">
+        <summary class="text-sm font-medium cursor-pointer text-slate-700 dark:text-slate-300">
+          高级选项（航向角）
+        </summary>
 
-            <div class="space-y-2">
-              <Label for="carBodyNegativeCourse">车体反向航向角</Label>
-              <Input
-                id="carBodyNegativeCourse"
-                v-model="formData.carBodyNegativeCourse"
-                type="number"
-                step="0.1"
-                placeholder="输入车体反向航向角"
-              />
-            </div>
+        <div class="pt-2 space-y-4">
+          <div class="space-y-2">
+            <label for="positiveCourse" class="text-sm font-medium">正向航向角</label>
+            <el-input
+              id="positiveCourse"
+              v-model="formData.positiveCourse"
+              type="number"
+              step="0.1"
+              placeholder="输入正向航向角"
+            />
           </div>
-        </details>
 
-        <!-- 表单按钮 -->
-        <DialogFooter>
-          <Button type="button" variant="outline" @click="handleCancel"> 取消 </Button>
-          <Button type="submit">
-            {{ isEdit ? '保存' : '创建' }}
-          </Button>
-        </DialogFooter>
-      </form>
-    </DialogContent>
-  </Dialog>
+          <div class="space-y-2">
+            <label for="negativeCourse" class="text-sm font-medium">反向航向角</label>
+            <el-input
+              id="negativeCourse"
+              v-model="formData.negativeCourse"
+              type="number"
+              step="0.1"
+              placeholder="输入反向航向角"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label for="carBodyPositiveCourse" class="text-sm font-medium">车体正向航向角</label>
+            <el-input
+              id="carBodyPositiveCourse"
+              v-model="formData.carBodyPositiveCourse"
+              type="number"
+              step="0.1"
+              placeholder="输入车体正向航向角"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label for="carBodyNegativeCourse" class="text-sm font-medium">车体反向航向角</label>
+            <el-input
+              id="carBodyNegativeCourse"
+              v-model="formData.carBodyNegativeCourse"
+              type="number"
+              step="0.1"
+              placeholder="输入车体反向航向角"
+            />
+          </div>
+        </div>
+      </details>
+    </form>
+
+    <!-- 表单按钮 -->
+    <template #footer>
+      <el-button @click="handleCancel">取消</el-button>
+      <el-button type="primary" native-type="submit" form="pathForm">
+        {{ isEdit ? '保存' : '创建' }}
+      </el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import NodeSelect from '@/components/ui/NodeSelect.vue'
 import dictData from '@/assets/dict.json'
 
@@ -419,7 +395,7 @@ const handleOpenChange = (value: boolean) => {
 <style scoped>
 /* details 样式优化 */
 details[open] {
-  background-color: hsl(var(--muted) / 0.3);
+  background-color: var(--el-fill-color-light);
 }
 
 summary {
@@ -427,6 +403,6 @@ summary {
 }
 
 summary:hover {
-  color: hsl(var(--primary));
+  color: var(--el-color-primary);
 }
 </style>
