@@ -34,15 +34,18 @@ export type MapType = 'main' | 'sub'
 // 地图项
 export interface MapItem {
   id: string
-  mapName: string
+  name: string
   type: MapType
   mapWidth: number
   mapLength: number
-  nodeList: CanvasNode[]
-  lineList: any[]
-  mainMapName?: string // 主地图名称
+  nodeList?: CanvasNode[]
+  lineList?: CanvasPathLine[]
+  mainMapName?: string // 主地图名称（子地图专用）
+  linkPoints?: number // 关联点数量（子地图专用）
   subMaps?: MapItem[]
 }
+
+
 
 /**
  * 节点业务数据（用于导入导出）

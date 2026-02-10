@@ -24,7 +24,7 @@
         <div class="text-sm font-semibold text-foreground">AGV 地图编辑器</div>
       </div>
       <div class="h-4 w-px bg-border"></div>
-      <div class="text-sm text-muted-foreground">主厂区总图</div>
+      <div class="text-sm text-muted-foreground">{{ currentMapName }}</div>
     </div>
 
     <!-- 右侧：操作按钮 + 深色模式切换 -->
@@ -117,7 +117,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useDarkMode } from '@/composables/useDarkMode'
+import { useMapStore } from '@/stores/mapStore'
 
 const { isDark, toggleDarkMode } = useDarkMode()
+const mapStore = useMapStore()
+
+// 当前地图名称
+const currentMapName = computed(() => mapStore.activeMap?.name || '未选择地图')
 </script>

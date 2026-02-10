@@ -375,10 +375,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
+import { useMapStore } from '@/stores/mapStore'
 import Panel from '@/components/common/Panel.vue'
 import dictData from '@/assets/dict.json'
 
 const canvasStore = useCanvasStore()
+const mapStore = useMapStore()
 
 // 字典数据
 const dict = dictData as {
@@ -423,19 +425,19 @@ const getNodeTypeName = (type: number): string => {
 
 // ==================== 地图属性 ====================
 const canvasWidth = computed({
-  get: () => canvasStore.canvasWidth,
+  get: () => mapStore.activeMap?.mapWidth ?? 0,
   set: (value: number) => {
-    if (!isNaN(value) && value > 0) {
-      canvasStore.canvasWidth = value
+    if (!isNaN(value) && value > 0 && mapStore.activeMap) {
+      mapStore.activeMap.mapWidth = value
     }
   },
 })
 
 const canvasHeight = computed({
-  get: () => canvasStore.canvasHeight,
+  get: () => mapStore.activeMap?.mapLength ?? 0,
   set: (value: number) => {
-    if (!isNaN(value) && value > 0) {
-      canvasStore.canvasHeight = value
+    if (!isNaN(value) && value > 0 && mapStore.activeMap) {
+      mapStore.activeMap.mapLength = value
     }
   },
 })

@@ -29,8 +29,8 @@ export const MAP_CONFIG = {
   },
 
   // 默认地图尺寸
-  defaultMainMapSize: { width: 1600, height: 1200 },
-  defaultSubMapSize: { width: 800, height: 600 },
+  defaultMainMapSize: { mapWidth: 1600, mapLength: 1200 },
+  defaultSubMapSize: { mapWidth: 800, mapLength: 600 },
 }
 
 // UI 配置

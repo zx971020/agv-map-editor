@@ -1,30 +1,38 @@
 // 模拟数据 - 用于静态界面展示
 import type { MapItem } from '@/types'
 
-// 示例地图数据
-export const MOCK_MAPS: MapItem[] = [
+// 示例地图数据（可选，用于初始化 mapStore）
+export const INITIAL_MAPS: MapItem[] = [
   {
     id: 'map-001',
     name: '主厂区总图',
     type: 'main',
-    width: 1600,
-    height: 1200,
+    mapWidth: 1600,
+    mapLength: 1200,
+    nodeList: [],
+    lineList: [],
     subMaps: [
       {
         id: 'map-001-sub-001',
         name: 'A区原料库',
         type: 'sub',
-        width: 800,
-        height: 600,
+        mapWidth: 800,
+        mapLength: 600,
+        mainMapName: '主厂区总图',
         linkPoints: 2,
+        nodeList: [],
+        lineList: [],
       },
       {
         id: 'map-001-sub-002',
         name: 'B区生产线',
         type: 'sub',
-        width: 1200,
-        height: 800,
+        mapWidth: 1200,
+        mapLength: 800,
+        mainMapName: '主厂区总图',
         linkPoints: 3,
+        nodeList: [],
+        lineList: [],
       },
     ],
   },
@@ -32,7 +40,9 @@ export const MOCK_MAPS: MapItem[] = [
     id: 'map-002',
     name: '办公区测试',
     type: 'main',
-    width: 800,
-    height: 800,
+    mapWidth: 800,
+    mapLength: 800,
+    nodeList: [],
+    lineList: [],
   },
 ]
