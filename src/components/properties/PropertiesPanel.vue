@@ -498,8 +498,8 @@ const nodeLeftStation = computed({
 
 const nodeRightStation = computed({
   get: () => selectedNode.value?.rightStation ?? 0,
-  set: (value: number) => {
-    if (selectedNode.value && !isNaN(value)) {
+  set: (value: string) => {
+    if (selectedNode.value ) {
       canvasStore.updateNode(selectedNode.value.id, { rightStation: value })
     }
   },

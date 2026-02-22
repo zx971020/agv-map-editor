@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, reactive } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
 import { useCanvasInteraction } from '@/composables/useCanvasInteraction'
 import NodeElement from '@/components/canvas/NodeElement.vue'

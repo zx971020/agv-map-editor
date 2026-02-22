@@ -45,8 +45,6 @@ export interface MapItem {
   subMaps?: MapItem[]
 }
 
-
-
 /**
  * 节点业务数据（用于导入导出）
  * 不包含图形属性和前端运行时 ID

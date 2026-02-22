@@ -119,7 +119,7 @@ export const useCanvasStore = defineStore('canvas', () => {
   }
 
   // 元素管理（笛卡尔坐标）
-  const nodes = ref<CanvasNode[]>(generateTestNodes())
+  const nodes = ref<CanvasNode[]>([])
   const pathLines = ref<CanvasPathLine[]>([]) // 路径线列表
   const paths = ref<CanvasPath[]>([]) // 旧的路径数据（保留兼容）
 
@@ -470,5 +470,6 @@ export const useCanvasStore = defineStore('canvas', () => {
     // 测试方法
     loadTestPathLines,
     clearAllPathLines,
+    generateTestNodes,
   }
 })

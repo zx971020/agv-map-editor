@@ -54,7 +54,7 @@
   <!-- 路径表单对话框 -->
   <PathFormDialog
     :open="pathDialogOpen"
-    :initial-start-node="node.node"
+    :initial-start-node="Number(node.node)"
     @update:open="pathDialogOpen = $event"
     @success="handlePathCreated"
   />
@@ -65,6 +65,7 @@ import { ref, computed, watch, onBeforeUnmount, nextTick } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
 import PathFormDialog from '@/components/dialogs/PathFormDialog.vue'
 import type { CanvasNode } from '@/types'
+import { addOrUpdateMap } from '@/api/editor'
 
 const props = defineProps<{
   node: CanvasNode

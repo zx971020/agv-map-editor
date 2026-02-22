@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AgvIcons: typeof import('./src/components/icons/AgvIcons.vue')['default']
     AppLayout: typeof import('./src/components/layout/AppLayout.vue')['default']
     BottomBar: typeof import('./src/components/workspace/BottomBar.vue')['default']
     CanvasArea: typeof import('./src/components/workspace/CanvasArea.vue')['default']

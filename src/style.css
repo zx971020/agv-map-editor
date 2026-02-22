@@ -132,6 +132,136 @@
   }
 }
 
+/* ==================== Element Plus 主题覆盖 ==================== */
+:root {
+  /* Element Plus 主色调 - 与项目 primary 保持一致 */
+  --el-color-primary: hsl(221, 83%, 53%);
+  --el-color-primary-light-1: hsl(221, 83%, 58%);
+  --el-color-primary-light-2: hsl(221, 83%, 63%);
+  --el-color-primary-light-3: hsl(221, 83%, 68%);
+  --el-color-primary-light-4: hsl(221, 83%, 73%);
+  --el-color-primary-light-5: hsl(221, 83%, 78%);
+  --el-color-primary-light-6: hsl(221, 83%, 83%);
+  --el-color-primary-light-7: hsl(221, 83%, 88%);
+  --el-color-primary-light-8: hsl(221, 83%, 93%);
+  --el-color-primary-light-9: hsl(221, 83%, 96%);
+  --el-color-primary-dark-2: hsl(221, 83%, 43%);
+
+  /* 危险色 */
+  --el-color-danger: hsl(0, 84%, 60%);
+  --el-color-danger-light-3: hsl(0, 84%, 72%);
+  --el-color-danger-light-5: hsl(0, 84%, 80%);
+  --el-color-danger-light-7: hsl(0, 84%, 88%);
+  --el-color-danger-light-8: hsl(0, 84%, 92%);
+  --el-color-danger-light-9: hsl(0, 84%, 96%);
+
+  /* 背景色 */
+  --el-bg-color: hsl(0, 0%, 100%);
+  --el-bg-color-overlay: hsl(0, 0%, 100%);
+  --el-bg-color-page: hsl(220, 13%, 95%);
+
+  /* 文字颜色 */
+  --el-text-color-primary: hsl(222, 47%, 11%);
+  --el-text-color-regular: hsl(215, 25%, 27%);
+  --el-text-color-secondary: hsl(215, 16%, 47%);
+  --el-text-color-placeholder: hsl(215, 16%, 57%);
+  --el-text-color-disabled: hsl(215, 16%, 67%);
+
+  /* 边框颜色 */
+  --el-border-color: hsl(214, 32%, 91%);
+  --el-border-color-light: hsl(214, 32%, 93%);
+  --el-border-color-lighter: hsl(214, 32%, 95%);
+  --el-border-color-extra-light: hsl(214, 32%, 97%);
+  --el-border-color-dark: hsl(214, 32%, 85%);
+  --el-border-color-darker: hsl(214, 32%, 80%);
+
+  /* 填充色 */
+  --el-fill-color: hsl(220, 13%, 95%);
+  --el-fill-color-light: hsl(220, 13%, 97%);
+  --el-fill-color-lighter: hsl(220, 13%, 98%);
+  --el-fill-color-extra-light: hsl(220, 13%, 99%);
+  --el-fill-color-blank: hsl(0, 0%, 100%);
+  --el-fill-color-dark: hsl(220, 13%, 91%);
+
+  /* 圆角 */
+  --el-border-radius-base: 6px;
+  --el-border-radius-small: 4px;
+  --el-border-radius-round: 20px;
+
+  /* 字体 */
+  --el-font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+  --el-font-size-base: 14px;
+  --el-font-size-small: 13px;
+
+  /* 阴影 */
+  --el-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --el-box-shadow-light: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --el-box-shadow-lighter: 0 1px 4px rgba(0, 0, 0, 0.04);
+  --el-box-shadow-dark: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Element Plus 深色模式覆盖 */
+html.dark {
+  /* 主色调 - 深色模式下稍微提亮 */
+  --el-color-primary: hsl(217, 91%, 60%);
+  --el-color-primary-light-1: hsl(217, 80%, 55%);
+  --el-color-primary-light-2: hsl(217, 70%, 50%);
+  --el-color-primary-light-3: hsl(217, 60%, 42%);
+  --el-color-primary-light-4: hsl(217, 50%, 36%);
+  --el-color-primary-light-5: hsl(217, 40%, 30%);
+  --el-color-primary-light-6: hsl(217, 35%, 26%);
+  --el-color-primary-light-7: hsl(217, 33%, 22%);
+  --el-color-primary-light-8: hsl(217, 33%, 18%);
+  --el-color-primary-light-9: hsl(217, 33%, 15%);
+  --el-color-primary-dark-2: hsl(217, 91%, 70%);
+
+  /* 危险色 */
+  --el-color-danger: hsl(0, 84%, 60%);
+  --el-color-danger-light-3: hsl(0, 60%, 42%);
+  --el-color-danger-light-5: hsl(0, 50%, 32%);
+  --el-color-danger-light-7: hsl(0, 40%, 24%);
+  --el-color-danger-light-8: hsl(0, 35%, 20%);
+  --el-color-danger-light-9: hsl(0, 33%, 16%);
+
+  /* 背景色 */
+  --el-bg-color: hsl(217, 33%, 17%);
+  --el-bg-color-overlay: hsl(217, 33%, 20%);
+  --el-bg-color-page: hsl(222, 47%, 11%);
+
+  /* 文字颜色 */
+  --el-text-color-primary: hsl(210, 40%, 98%);
+  --el-text-color-regular: hsl(215, 20%, 80%);
+  --el-text-color-secondary: hsl(215, 20%, 65%);
+  --el-text-color-placeholder: hsl(215, 16%, 50%);
+  --el-text-color-disabled: hsl(215, 16%, 40%);
+
+  /* 边框颜色 */
+  --el-border-color: hsl(217, 33%, 24%);
+  --el-border-color-light: hsl(217, 33%, 22%);
+  --el-border-color-lighter: hsl(217, 33%, 20%);
+  --el-border-color-extra-light: hsl(217, 33%, 18%);
+  --el-border-color-dark: hsl(217, 33%, 30%);
+  --el-border-color-darker: hsl(217, 33%, 35%);
+
+  /* 填充色 */
+  --el-fill-color: hsl(217, 33%, 20%);
+  --el-fill-color-light: hsl(217, 33%, 18%);
+  --el-fill-color-lighter: hsl(217, 33%, 16%);
+  --el-fill-color-extra-light: hsl(217, 33%, 14%);
+  --el-fill-color-blank: hsl(217, 33%, 17%);
+  --el-fill-color-dark: hsl(217, 33%, 24%);
+
+  /* 阴影 - 深色模式下加深 */
+  --el-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.36);
+  --el-box-shadow-light: 0 2px 8px rgba(0, 0, 0, 0.28);
+  --el-box-shadow-lighter: 0 1px 4px rgba(0, 0, 0, 0.2);
+  --el-box-shadow-dark: 0 6px 16px rgba(0, 0, 0, 0.48);
+
+  /* 遮罩层 */
+  --el-mask-color: rgba(0, 0, 0, 0.6);
+  --el-mask-color-extra-light: rgba(0, 0, 0, 0.3);
+}
+
 @layer utilities {
   /* 现代化工具类 */
   .glass-effect {

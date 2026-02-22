@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO:对话框打开动画效果过于卡顿，需要优化 -->
   <el-dialog
     :model-value="open"
     @update:model-value="handleOpenChange"

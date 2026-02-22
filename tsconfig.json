@@ -13,7 +13,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
-    "types": ["element-plus/global"],
+    "types": ["element-plus/global", "vitest/globals"],
 
     /* Linting */
     "strict": true,

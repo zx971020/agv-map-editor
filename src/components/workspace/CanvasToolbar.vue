@@ -22,9 +22,7 @@
     <!-- 中间工具组 -->
     <div class="flex items-center gap-1">
       <el-button
-        text
         circle
-        size="small"
         :title="canvasStore.grid.show ? '隐藏网格 (G)' : '显示网格 (G)'"
         :class="{ 'bg-accent text-accent-foreground': canvasStore.grid.show }"
         @click="toggleGrid"
@@ -35,6 +33,7 @@
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
+          class="w-4 h-4"
         >
           <path
             stroke-linecap="round"
@@ -45,7 +44,6 @@
       </el-button>
 
       <el-button
-        text
         circle
         size="small"
         :title="canvasStore.grid.snapToGrid ? '关闭网格吸附 (Shift+G)' : '开启网格吸附 (Shift+G)'"
@@ -58,6 +56,7 @@
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
+          class="w-4 h-4"
         >
           <path
             stroke-linecap="round"
@@ -132,27 +131,6 @@
       <el-button size="small">导出</el-button>
       <el-button type="danger" size="small">删除</el-button>
 
-      <div class="w-px h-6 bg-border"></div>
-
-      <!-- 性能测试按钮 -->
-      <el-button type="info" size="small" @click="generateTestLines">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-4 h-4"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
-          />
-        </svg>
-        生成500条线
-      </el-button>
-      <el-button text size="small" @click="clearTestLines">清空连接线</el-button>
     </div>
 
     <!-- 路径表单对话框 -->

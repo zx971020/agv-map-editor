@@ -33,7 +33,7 @@
             : 'hover:bg-accent hover:text-accent-foreground',
           selectedValue === node.node ? 'bg-primary/10' : '',
         ]"
-        @click="handleSelect(node.node)"
+        @click="handleSelect(Number(node.node))"
       >
         <div class="flex items-center justify-between">
           <span class="font-medium">节点 {{ node.node }}</span>
@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useCanvasStore } from '@/stores/canvasStore'
 import type { CanvasNode } from '@/types'
 
@@ -204,7 +204,7 @@ const handleClear = () => {
 // 处理回车
 const handleEnter = () => {
   if (displayedNodes.value.length > 0 && highlightedIndex.value >= 0) {
-    handleSelect(displayedNodes.value[highlightedIndex.value].node)
+    handleSelect(Number(displayedNodes.value[highlightedIndex.value].node))
   }
 }
 
